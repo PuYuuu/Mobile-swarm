@@ -1,7 +1,7 @@
 <launch>
-    <arg name="sequence_1" default = "/home/tony-ws1/bag/ijrr_euroc_mav_dataset/MH_01_easy/MH_01_easy.bag" />
-    <arg name="sequence_2" default = "/home/tony-ws1/bag/ijrr_euroc_mav_dataset/MH_02_easy/MH_02_easy.bag" />
-    <arg name="sequence_3" default = "/home/tony-ws1/bag/ijrr_euroc_mav_dataset/MH_03_medium/MH_03_medium.bag" />
+    <arg name="sequence_1" default = "/media/puyu/Data/Datasets/Euroc/MH_01_easy.bag" />
+    <arg name="sequence_2" default = "/media/puyu/Data/Datasets/Euroc/MH_02_easy.bag" />
+    <arg name="sequence_3" default = "/media/puyu/Data/Datasets/Euroc/MH_03_medium.bag" />
  
     <group ns="vins_1">
     <param name="config_file" type="string" value="$(find feature_tracker)/../config/euroc/euroc_config.yaml" />
@@ -38,8 +38,8 @@
         <param name="visualization_shift_y" type="int" value="0" />
         <param name="skip_cnt" type="int" value="0" />
         <param name="skip_dis" type="double" value="0" />
-        <param name="pose_graph_save_path" type="string" value="/home/ri/raw_data/pose_graph/" />
-        <param name="pose_graph_result_path" type="string" value="/home/tony-ws1/output/" />
+        <param name="pose_graph_save_path" type="string" value="/home/puyu/output/mobile-swarm/pose_graph/" />
+        <param name="pose_graph_result_path" type="string" value="/home/puyu/output/mobile-swarm/" />
     </node>
 
     <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins_estimator)/../config/multi_agent_rviz.rviz" />

@@ -1,5 +1,5 @@
 # Mobile-swarm
-## Cooperative Control of Multiple Mobile Robots Based on CO-VINS
+## Cooperative Control of Multiple Mobile Robots Based on Co-VINS
 
 
 
