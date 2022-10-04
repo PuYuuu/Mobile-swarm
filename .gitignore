@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+support_files/brief_k10L6.bin
+.vscode/
