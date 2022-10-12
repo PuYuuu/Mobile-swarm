@@ -58,7 +58,7 @@ void ImageIndex::addImage(const unsigned image_id,
     item.pt = kps[i].pt;
     item.dist = 0.0;
     item.kp_ind = i;
-    inv_index_[d].push_back(item);
+    inv_index_[d].emplace_back(item);
   }
 
   // If the trees are not initialized, we build them
@@ -112,7 +112,7 @@ void ImageIndex::addImage(const unsigned image_id,
     item.pt = kps[index].pt;
     item.dist = 0.0;
     item.kp_ind = index;
-    inv_index_[d].push_back(item);
+    inv_index_[d].emplace_back(item);
   }
 
   // --- Updating the matched descriptors into the index
@@ -137,7 +137,7 @@ void ImageIndex::addImage(const unsigned image_id,
     item.pt = kps[qindex].pt;
     item.dist = matches[match_ind].distance;
     item.kp_ind = qindex;
-    inv_index_[t_d].push_back(item);
+    inv_index_[t_d].emplace_back(item);
   }
 
   // Deleting unstable features
@@ -207,7 +207,7 @@ void ImageIndex::initTrees() {
   for (unsigned i = 0; i < t_; i++) {
     BinaryTreePtr tree_ptr =
               std::make_shared<BinaryTree>(dset_ptr, i, k_, s_);
-    trees_.push_back(tree_ptr);
+    trees_.emplace_back(tree_ptr);
   }
 }
 
@@ -235,9 +235,9 @@ void ImageIndex::searchDescriptors(
       match.trainIdx = static_cast<int>(desc_to_id_[neighs[j]]);
       match.imgIdx = static_cast<int>(inv_index_[neighs[j]][0].image_id);
       match.distance = dists[j];
-      des_match.push_back(match);
+      des_match.emplace_back(match);
     }
-    matches->push_back(des_match);
+    matches->emplace_back(des_match);
   }
 }
 
@@ -261,10 +261,10 @@ void ImageIndex::searchDescriptor(BinaryDescriptorPtr q,
   std::vector<DescriptorQueuePtr> rs;
   for (unsigned i = 0; i < trees_.size(); i++) {
     NodeQueuePtr tpq = std::make_shared<NodeQueue>();
-    pqs.push_back(tpq);
+    pqs.emplace_back(tpq);
 
     DescriptorQueuePtr tr = std::make_shared<DescriptorQueue>();
-    rs.push_back(tr);
+    rs.emplace_back(tr);
   }
 
   // Searching in the trees
@@ -338,8 +338,8 @@ void ImageIndex::searchDescriptor(BinaryDescriptorPtr q,
   for (unsigned i = 0; i < ndescs; i++) {
     DescriptorQueueItem d = r.get(i);
 
-    neigh->push_back(d.desc);
-    distances->push_back(d.dist);
+    neigh->emplace_back(d.desc);
+    distances->emplace_back(d.dist);
   }
 }
 
@@ -348,7 +348,7 @@ void ImageIndex::insertDescriptor(BinaryDescriptorPtr q) {
   desc_to_id_[q] = ndesc_;
   id_to_desc_[ndesc_] = q;
   ndesc_++;
-  recently_added_.push_back(q);
+  recently_added_.emplace_back(q);
 
   // Indexing the descriptor inside each tree
   if (init_) {
@@ -392,8 +392,8 @@ void ImageIndex::getMatchings(
       unsigned im_id = item.image_id;
       cv::Point2f tpoint = item.pt;
 
-      (*point_matches)[im_id].query.push_back(qpoint);
-      (*point_matches)[im_id].train.push_back(tpoint);
+      (*point_matches)[im_id].query.emplace_back(qpoint);
+      (*point_matches)[im_id].train.emplace_back(tpoint);
     }
   }
 }

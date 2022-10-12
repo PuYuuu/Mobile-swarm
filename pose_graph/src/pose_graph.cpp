@@ -1,6 +1,6 @@
 #include "pose_graph.h"
 
-PoseGraph::PoseGraph()
+PoseGraph::PoseGraph() : lcdetetecor(lcparams)
 {
     posegraph_visualization = new CameraPoseVisualization(1.0, 0.0, 1.0, 1.0);
     posegraph_visualization->setScale(0.1);
@@ -65,9 +65,9 @@ void PoseGraph::addAgentFrame(KeyFrame* cur_kf)
 
 
     int loop_index = -1;
-    //TicToc t_detectloop;
+    TicToc t_detectloop;
     loop_index = detectLoop(cur_kf, cur_kf->index);
-    //printf("detect loop time %f\n", t_detectloop.toc());
+    printf("function detectLoop() time: %f ms\n", t_detectloop.toc());
     bool find_connection = false;
     bool need_update_path = false;
     if (loop_index != -1)
@@ -356,51 +356,112 @@ KeyFrame* PoseGraph::getKeyFrame(int index)
         return keyframe_vec[index];
 }
 
+// int PoseGraph::detectLoop(KeyFrame* keyframe, int frame_index)
+// {
+//     TicToc tmp_t;
+//     //first query; then add this frame into database!
+//     QueryResults ret;
+//     TicToc t_query;
+//     db.query(keyframe->feature_des, ret, 4, frame_index - 30);
+//     //printf("query time: %f", t_query.toc());
+//     //cout << "Searching for Image " << frame_index << ". " << ret << endl;
+//     // printf("feature_des size = %d\n",(int)keyframe->feature_des.size());
+
+//     TicToc t_add;
+//     db.add(keyframe->feature_des);
+//     //printf("add feature time: %f", t_add.toc());
+//     // ret[0] is the nearest neighbour's score. threshold change with neighour score
+//     bool find_loop = false;
+//     cv::Mat loop_result;
+
+//     // a good match with its nerghbour
+//     if (ret.size() >= 1 &&ret[0].Score > 0.05)
+//         for (unsigned int i = 1; i < ret.size(); i++)
+//         {
+//             //if (ret[i].Score > ret[0].Score * 0.3)
+//             if (ret[i].Score > 0.015)
+//                 find_loop = true;
+//         }
+// /*
+//     if (DEBUG_IMAGE)
+//     {
+//         cv::imshow("loop_result", loop_result);
+//         cv::waitKey(20);
+//     }
+// */
+//     if (find_loop && frame_index > 10)
+//     {
+//         int min_index = -1;
+//         for (unsigned int i = 0; i < ret.size(); i++)
+//         {
+//             if (min_index == -1 || (ret[i].Id < min_index && ret[i].Score > 0.015))
+//                 min_index = ret[i].Id;
+//         }
+//         return min_index;
+//     }
+//     else
+//         return -1;
+
+// }
+
 int PoseGraph::detectLoop(KeyFrame* keyframe, int frame_index)
 {
-    TicToc tmp_t;
-    //first query; then add this frame into database!
-    QueryResults ret;
-    TicToc t_query;
-    db.query(keyframe->feature_des, ret, 4, frame_index - 30);
-    //printf("query time: %f", t_query.toc());
-    //cout << "Searching for Image " << frame_index << ". " << ret << endl;
+    ibow_lcd::LCDetectorResult result;
 
-    TicToc t_add;
-    db.add(keyframe->feature_des);
-    //printf("add feature time: %f", t_add.toc());
-    // ret[0] is the nearest neighbour's score. threshold change with neighour score
-    bool find_loop = false;
-    cv::Mat loop_result;
+    int point_size = keyframe->feature_2d.size();
+    int des_size = keyframe->feature_des.size();
 
-    // a good match with its nerghbour
-    if (ret.size() >= 1 &&ret[0].Score > 0.05)
-        for (unsigned int i = 1; i < ret.size(); i++)
-        {
-            //if (ret[i].Score > ret[0].Score * 0.3)
-            if (ret[i].Score > 0.015)
-                find_loop = true;
-        }
-/*
-    if (DEBUG_IMAGE)
-    {
-        cv::imshow("loop_result", loop_result);
-        cv::waitKey(20);
+    vector<cv::KeyPoint> convert_point(point_size);
+    for (int i = 0; i < point_size; ++i) {
+        convert_point[i].pt = keyframe->feature_2d[i];
     }
-*/
-    if (find_loop && frame_index > 10)
-    {
-        int min_index = -1;
-        for (unsigned int i = 0; i < ret.size(); i++)
-        {
-            if (min_index == -1 || (ret[i].Id < min_index && ret[i].Score > 0.015))
-                min_index = ret[i].Id;
-        }
-        return min_index;
-    }
-    else
-        return -1;
 
+    cv::Mat convert_des = cv::Mat(des_size, 32, CV_8UC1);
+    uint8_t* des_ptr = nullptr;
+    for (int i = 0; i < des_size; ++i) {
+        des_ptr = convert_des.ptr<uint8_t>(i);
+        for (int j = 0; j < 32; ++j) {
+            uint8_t tmpnum = 0;
+            for (int k = 0; k < 8; ++k) {
+                tmpnum = (tmpnum << 1) + keyframe->feature_des[i][j * 8 + k];
+            }
+            des_ptr[j] = tmpnum;
+        }
+    }
+
+    // TicToc t_process;
+    lcdetetecor.process(frame_index, convert_point, convert_des, &result);
+    // printf("t_process time: %f ms\n\n", t_process.toc());
+    
+    // switch (result.status)
+    // {
+    // case ibow_lcd::LC_DETECTED:
+    //     std::cout << "--- Loop detected!!!: " << result.train_id << " with " << result.inliers << " inliers\n"; 
+    //     break;
+    // case ibow_lcd::LC_NOT_DETECTED:
+    //     std::cout << "No loop found" << std::endl;
+    //     break;
+    // case ibow_lcd::LC_NOT_ENOUGH_IMAGES:
+    //     std::cout << "Not enough images to found a loop" << std::endl;
+    //     break;
+    // case ibow_lcd::LC_NOT_ENOUGH_ISLANDS:
+    //     std::cout << "Not enough islands to found a loop" << std::endl;
+    //     break;
+    // case ibow_lcd::LC_NOT_ENOUGH_INLIERS:
+    //     std::cout << "Not enough inliers, " << std::endl;
+    //     break;
+    // case ibow_lcd::LC_TRANSITION:
+    //     std::cout << "Transitional loop closure" << std::endl;
+    //     break;
+    // default:
+    //     std::cout << "No status information" << std::endl;
+    //     break;
+    // }
+
+    if (result.status == ibow_lcd::LC_DETECTED) {
+        return result.train_id;
+    }
+    return -1;
 }
 
 void PoseGraph::addKeyFrameIntoVoc(KeyFrame* keyframe)

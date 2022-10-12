@@ -55,8 +55,8 @@ void LCDetector::process(const unsigned image_id,
   result->query_id = image_id;
 
   // Storing the keypoints and descriptors
-  prev_kps_.push_back(kps);
-  prev_descs_.push_back(descs);
+  prev_kps_.emplace_back(kps);
+  prev_descs_.emplace_back(descs);
 
   // Adding the current image to the queue to be added in the future
   queue_ids_.push(image_id);
@@ -86,6 +86,7 @@ void LCDetector::process(const unsigned image_id,
   // Filtering matches according to the ratio test
   std::vector<cv::DMatch> matches;
   filterMatches(matches_feats, &matches);
+  prev_matches_.emplace_back(matches);
 
   std::vector<obindex2::ImageMatch> image_matches;
 
@@ -176,124 +177,13 @@ void LCDetector::process(const unsigned image_id,
   // }
 }
 
-void LCDetector::debug(const unsigned image_id,
-             const std::vector<cv::KeyPoint>& kps,
-             const cv::Mat& descs,
-             std::ofstream& out_file) {
-  auto start = std::chrono::steady_clock::now();
-  // Storing the keypoints and descriptors
-  prev_kps_.push_back(kps);
-  prev_descs_.push_back(descs);
-
-  // Adding the current image to the queue to be added in the future
-  queue_ids_.push(image_id);
-
-  // Assessing if, at least, p images have arrived
-  if (queue_ids_.size() < p_) {
-    auto end = std::chrono::steady_clock::now();
-    auto diff = end - start;
-    out_file << 0 << "\t";  // min_id
-    out_file << 0 << "\t";  // max_id
-    out_file << 0 << "\t";  // img_id
-    out_file << 0 << "\t";  // overlap
-    out_file << 0 << "\t";  // Inliers
-    out_file << index_->numDescriptors() << "\t";  // Voc. Size
-    out_file << std::chrono::duration<double, std::milli>(diff).count() << "\t";  // Time
-    out_file << std::endl;
-    return;
-  }
-
-  // Adding new hypothesis
-  unsigned newimg_id = queue_ids_.front();
-  queue_ids_.pop();
-
-  addImage(newimg_id, prev_kps_[newimg_id], prev_descs_[newimg_id]);
-
-  // Searching similar images in the index
-  // Matching the descriptors agains the current visual words
-  std::vector<std::vector<cv::DMatch> > matches_feats;
-
-  // Searching the query descriptors against the features
-  index_->searchDescriptors(descs, &matches_feats, 2, 64);
-
-  // Filtering matches according to the ratio test
-  std::vector<cv::DMatch> matches;
-  filterMatches(matches_feats, &matches);
-
-  std::vector<obindex2::ImageMatch> image_matches;
-
-  // We look for similar images according to the filtered matches found
-  index_->searchImages(descs, matches, &image_matches, true);
-
-  // Filtering the resulting image matchings
-  std::vector<obindex2::ImageMatch> image_matches_filt;
-  filterCandidates(image_matches, &image_matches_filt);
-
-  std::vector<Island> islands;
-  buildIslands(image_matches_filt, &islands);
-
-  if (!islands.size()) {
-    // No resulting islands
-    auto end = std::chrono::steady_clock::now();
-    auto diff = end - start;
-    out_file << 0 << "\t";  // min_id
-    out_file << 0 << "\t";  // max_id
-    out_file << 0 << "\t";  // img_id
-    out_file << 0 << "\t";  // overlap
-    out_file << 0 << "\t";  // Inliers
-    out_file << index_->numDescriptors() << "\t";  // Voc. Size
-    out_file << std::chrono::duration<double, std::milli>(diff).count() << "\t";  // Time
-    out_file << std::endl;
-    return;
-  }
-
-  // std::cout << "Resulting Islands:" << std::endl;
-  // for (unsigned i = 0; i < islands.size(); i++) {
-  //   std::cout << islands[i].toString();
-  // }
-
-  // Selecting the corresponding island to be processed
-  Island island = islands[0];
-  std::vector<Island> p_islands;
-  getPriorIslands(last_lc_island_, islands, &p_islands);
-  if (p_islands.size()) {
-    island = p_islands[0];
-  }
-
-  bool overlap = island.overlaps(last_lc_island_);
-  last_lc_island_ = island;
-
-  unsigned best_img = island.img_id;
-
-  // We obtain the image matchings, since we need them for compute F
-  std::vector<cv::DMatch> tmatches;
-  std::vector<cv::Point2f> tquery;
-  std::vector<cv::Point2f> ttrain;
-  ratioMatchingBF(descs, prev_descs_[best_img], &tmatches);
-  convertPoints(kps, prev_kps_[best_img], tmatches, &tquery, &ttrain);
-  unsigned inliers = checkEpipolarGeometry(tquery, ttrain);
-
-  auto end = std::chrono::steady_clock::now();
-  auto diff = end - start;
-
-  // Writing results
-  out_file << island.min_img_id << "\t";          // min_id
-  out_file << island.max_img_id << "\t";          // max_id
-  out_file << best_img << "\t";                   // img_id
-  out_file << overlap << "\t";                    // overlap
-  out_file << inliers << "\t";                    // Inliers
-  out_file << index_->numDescriptors() << "\t";   // Voc. Size
-  out_file << std::chrono::duration<double, std::milli>(diff).count() << "\t";  // Time
-  out_file << std::endl;
-}
-
 void LCDetector::addImage(const unsigned image_id,
                           const std::vector<cv::KeyPoint>& kps,
                           const cv::Mat& descs) {
-  if (index_->numImages() == 0) {
+  if (image_id == 0) {
     // This is the first image that is inserted into the index
     index_->addImage(image_id, kps, descs);
-  } else {
+  } else if (image_id < p_ - 1){
     // We have to search the descriptor and filter them before adding descs
     // Matching the descriptors
     std::vector<std::vector<cv::DMatch> > matches_feats;
@@ -307,6 +197,8 @@ void LCDetector::addImage(const unsigned image_id,
 
     // Finally, we add the image taking into account the correct matchings
     index_->addImage(image_id, kps, descs, matches);
+  } else {
+    index_->addImage(image_id, kps, descs, prev_matches_[image_id - p_ + 1]);
   }
 }
 
@@ -319,7 +211,7 @@ void LCDetector::filterMatches(
   // Filtering matches according to the ratio test
   for (unsigned m = 0; m < matches_feats.size(); m++) {
     if (matches_feats[m][0].distance <= matches_feats[m][1].distance * nndr_) {
-      matches->push_back(matches_feats[m][0]);
+      matches->emplace_back(matches_feats[m][0]);
     }
   }
 }
@@ -340,7 +232,7 @@ void LCDetector::filterCandidates(
     if (new_score > min_score_) {
       obindex2::ImageMatch match = image_matches[i];
       match.score = new_score;
-      image_matches_filt->push_back(match);
+      image_matches_filt->emplace_back(match);
     } else {
       break;
     }
@@ -383,7 +275,7 @@ void LCDetector::buildIslands(
                         curr_score,
                         min_id,
                         max_id);
-      islands->push_back(new_island);
+      islands->emplace_back(new_island);
     }
   }
 
@@ -405,7 +297,7 @@ void LCDetector::getPriorIslands(
   for (unsigned i = 0; i < islands.size(); i++) {
     Island tisl = islands[i];
     if (island.overlaps(tisl)) {
-      p_islands->push_back(tisl);
+      p_islands->emplace_back(tisl);
     }
   }
 }
@@ -448,7 +340,7 @@ void LCDetector::ratioMatchingBF(const cv::Mat& query,
   // Filtering the resulting matchings according to the given ratio
   for (unsigned m = 0; m < matches12.size(); m++) {
     if (matches12[m][0].distance <= matches12[m][1].distance * nndr_bf_) {
-      matches->push_back(matches12[m][0]);
+      matches->emplace_back(matches12[m][0]);
     }
   }
 }
@@ -464,12 +356,12 @@ void LCDetector::convertPoints(const std::vector<cv::KeyPoint>& query_kps,
     // Get the position of query keypoints
     float x = query_kps[it->queryIdx].pt.x;
     float y = query_kps[it->queryIdx].pt.y;
-    query->push_back(cv::Point2f(x, y));
+    query->emplace_back(cv::Point2f(x, y));
 
     // Get the position of train keypoints
     x = train_kps[it->trainIdx].pt.x;
     y = train_kps[it->trainIdx].pt.y;
-    train->push_back(cv::Point2f(x, y));
+    train->emplace_back(cv::Point2f(x, y));
   }
 }
 

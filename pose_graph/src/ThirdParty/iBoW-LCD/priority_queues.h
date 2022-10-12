@@ -52,7 +52,7 @@ struct NodeQueueItem {
 class NodeQueue {
  public:
   inline void push(const NodeQueueItem& item) {
-    items.push_back(item);
+    items.emplace_back(item);
   }
 
   inline NodeQueueItem get(unsigned index) {
@@ -102,7 +102,7 @@ struct DescriptorQueueItem {
 class DescriptorQueue {
  public:
   inline void push(const DescriptorQueueItem& item) {
-    items.push_back(item);
+    items.emplace_back(item);
   }
 
   inline DescriptorQueueItem get(unsigned index) {

@@ -43,8 +43,8 @@ struct LCDetectorParams {
     t(4),
     merge_policy(obindex2::MERGE_POLICY_NONE),
     purge_descriptors(true),
-    min_feat_apps(2),
-    p(250),
+    min_feat_apps(5),
+    p(50),
     nndr(0.8f),
     nndr_bf(0.8f),
     ep_dist(2.0),
@@ -114,10 +114,6 @@ class LCDetector {
                const std::vector<cv::KeyPoint>& kps,
                const cv::Mat& descs,
                LCDetectorResult* result);
-  void debug(const unsigned image_id,
-             const std::vector<cv::KeyPoint>& kps,
-             const cv::Mat& descs,
-             std::ofstream& out_file);
 
  private:
   // Parameters
@@ -148,6 +144,7 @@ class LCDetector {
 
   std::vector<std::vector<cv::KeyPoint> > prev_kps_;
   std::vector<cv::Mat> prev_descs_;
+  std::vector<std::vector<cv::DMatch> > prev_matches_;
 
   void addImage(const unsigned image_id,
                 const std::vector<cv::KeyPoint>& kps,

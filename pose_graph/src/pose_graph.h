@@ -24,6 +24,7 @@
 #include "ThirdParty/DVision/DVision.h"
 #include "ThirdParty/DBoW/TemplatedDatabase.h"
 #include "ThirdParty/DBoW/TemplatedVocabulary.h"
+#include "ThirdParty/iBoW-LCD/lcdetector.h"
 #include <tf/transform_broadcaster.h>
 
 #define SHOW_S_EDGE false
@@ -72,6 +73,8 @@ private:
 	
 	BriefDatabase db;
 	BriefVocabulary* voc;
+	ibow_lcd::LCDetectorParams lcparams; 
+    ibow_lcd::LCDetector lcdetetecor;
 
 	ros::Publisher pub_pg_path;
 	ros::Publisher pub_base_path;

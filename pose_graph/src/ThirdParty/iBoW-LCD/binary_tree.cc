@@ -80,7 +80,7 @@ namespace obindex2 {
         // Selecting a new center
         BinaryDescriptorPtr desc = *std::next(dset.begin(),
                                             rand() % dset.size());
-        new_centers.push_back(desc);
+        new_centers.emplace_back(desc);
         assoc_descs[i].insert(desc);
         dset.erase(desc);
       }
@@ -173,7 +173,7 @@ namespace obindex2 {
         BinaryTreeNodePtr bn = *it;
         double dist = bn->distance(q);
         NodeQueueItem item(dist, tree_id_, bn);
-        items.push_back(item);
+        items.emplace_back(item);
 
         if (dist < min_dist) {
           min_dist = dist;
@@ -221,7 +221,7 @@ namespace obindex2 {
       // Computing distances to nodes
       for (auto it = (*nodes).begin(); it != (*nodes).end(); it++) {
         BinaryTreeNodePtr bn = *it;
-        items.push_back(bn);
+        items.emplace_back(bn);
         double dist = bn->distance(q);
 
         if (dist < min_dist) {

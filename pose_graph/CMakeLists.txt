@@ -40,6 +40,11 @@ add_executable(pose_graph
     src/ThirdParty/DBoW/FeatureVector.cpp
     src/ThirdParty/DBoW/QueryResults.cpp
     src/ThirdParty/DBoW/ScoringObject.cpp
+    src/ThirdParty/iBoW-LCD/lcdetector.cc
+    src/ThirdParty/iBoW-LCD/binary_descriptor.cc
+    src/ThirdParty/iBoW-LCD/binary_tree_node.cc
+    src/ThirdParty/iBoW-LCD/binary_tree.cc
+    src/ThirdParty/iBoW-LCD/binary_index.cc
     src/ThirdParty/DUtils/Random.cpp
     src/ThirdParty/DUtils/Timestamp.cpp
     src/ThirdParty/DVision/BRIEF.cpp
