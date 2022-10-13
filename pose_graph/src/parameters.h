@@ -12,6 +12,7 @@
 
 extern int VISUALIZATION_SHIFT_X;
 extern int VISUALIZATION_SHIFT_Y;
+extern bool USE_IBOW;
 extern std::string BRIEF_PATTERN_FILE;
 extern std::string POSE_GRAPH_SAVE_PATH;
 extern std::string VINS_RESULT_PATH;

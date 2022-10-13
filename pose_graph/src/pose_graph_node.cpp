@@ -11,7 +11,6 @@
 #include "keyframe.h"
 #include "utility/tic_toc.h"
 #include "pose_graph.h"
-#include "parameters.h"
 #include <agent_msg/AgentMsg.h>
 #include "ThirdParty/DVision/DVision.h"
 #include "visualization_msgs/Marker.h"
@@ -31,6 +30,7 @@ double t_agent = 0;
 
 int VISUALIZATION_SHIFT_X;
 int VISUALIZATION_SHIFT_Y;
+bool USE_IBOW;
 
 std::string BRIEF_PATTERN_FILE;
 std::string POSE_GRAPH_SAVE_PATH;
@@ -293,12 +293,18 @@ int main(int argc, char **argv)
     n.getParam("visualization_shift_y", VISUALIZATION_SHIFT_Y);
     n.getParam("skip_dis", SKIP_DIS);
     n.getParam("pose_graph_save_path", POSE_GRAPH_SAVE_PATH);
+    n.getParam("use_ibow", USE_IBOW);
     n.param("mesh_resource", mesh_resource, std::string("package://pose_graph/meshes/hummingbird.mesh"));
-
+    
     std::string pkg_path = ros::package::getPath("pose_graph");
-    string vocabulary_file = pkg_path + "/../support_files/brief_k10L6.bin";
-    cout << "vocabulary_file" << vocabulary_file << endl;
-    posegraph.loadVocabulary(vocabulary_file);
+    if (!USE_IBOW) {
+        string vocabulary_file = pkg_path + "/../support_files/brief_k10L6.bin";
+        cout << "Use DBoW to detecLoop() " << endl;
+        cout << "vocabulary_file" << vocabulary_file << endl;
+        posegraph.loadVocabulary(vocabulary_file);
+    } else {
+        cout << "Use iBoW-LCD to detecLoop() " << endl;
+    }
 
     BRIEF_PATTERN_FILE = pkg_path + "/../support_files/brief_pattern.yml";
     cout << "BRIEF_PATTERN_FILE" << BRIEF_PATTERN_FILE << endl;

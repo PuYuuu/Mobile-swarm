@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <ros/ros.h>
 #include "keyframe.h"
+#include "parameters.h"
 #include "utility/tic_toc.h"
 #include "utility/utility.h"
 #include "utility/CameraPoseVisualization.h"
