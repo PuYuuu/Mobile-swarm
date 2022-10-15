@@ -1,8 +1,8 @@
 <launch>
-	<arg name="sequence_1" default = "/home/tony-ws1/bag/iser2018/swarm_bag/1.bag" />
-	<arg name="sequence_2" default = "/home/tony-ws1/bag/iser2018/swarm_bag/2.bag" />
-	<arg name="sequence_3" default = "/home/tony-ws1/bag/iser2018/swarm_bag/3.bag" />
-	<arg name="sequence_4" default = "/home/tony-ws1/bag/iser2018/swarm_bag/4.bag" />
+	<arg name="sequence_1" default = "/media/puyu/Data/Datasets/Co-Vins/1.bag" />
+	<arg name="sequence_2" default = "/media/puyu/Data/Datasets/Co-Vins/2.bag" />
+	<arg name="sequence_3" default = "/media/puyu/Data/Datasets/Co-Vins/3.bag" />
+	<arg name="sequence_4" default = "/media/puyu/Data/Datasets/Co-Vins/4.bag" />
 	
 <group ns="vins_1">
 	<param name="config_file" type="string" value="$(find feature_tracker)/../config/A3/A3_config_local.yaml" />
@@ -39,6 +39,7 @@
 
 
     <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
+		<param name="use_ibow" type="bool" value="false" />
         <param name="visualization_shift_x" type="int" value="0" />
         <param name="visualization_shift_y" type="int" value="0" />
         <param name="skip_cnt" type="int" value="0" />

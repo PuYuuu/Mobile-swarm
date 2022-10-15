@@ -44,14 +44,14 @@ struct LCDetectorParams {
     merge_policy(obindex2::MERGE_POLICY_NONE),
     purge_descriptors(true),
     min_feat_apps(5),
-    p(30),
+    p(25),
     nndr(0.8f),
     nndr_bf(0.8f),
     ep_dist(2.0),
     conf_prob(0.985),
-    min_score(0.3),
+    min_score(0.25),
     island_size(7),
-    min_inliers(22),
+    min_inliers(20),
     nframes_after_lc(3),
     min_consecutive_loops(5) {}
 

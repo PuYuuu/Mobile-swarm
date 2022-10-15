@@ -1,0 +1,16 @@
+<launch>
+
+    <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
+        <param name="use_ibow" type="bool" value="false" />
+        <param name="visualization_shift_x" type="int" value="0" />
+        <param name="visualization_shift_y" type="int" value="0" />
+        <param name="skip_cnt" type="int" value="0" />
+        <param name="skip_dis" type="double" value="0" />
+        <param name="pose_graph_save_path" type="string" value="/home/puyu/output/pose_graph/" />
+        <param name="pose_graph_result_path" type="string" value="/home/puyu/output/" />
+    </node>
+
+    <!-- <node name="ecustBot" pkg="my_toolkit" type="ecustBotPro" output="screen"/> -->
+    <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins_estimator)/../config/multi_agent_rviz.rviz" /> -->
+
+</launch>
