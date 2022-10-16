@@ -40,7 +40,8 @@ target_link_libraries(obs_detection ${catkin_LIBRARIES} ${Pangolin_LIBRARIES})
 add_executable(mobile_swarm 
   src/mobile_swarm.cpp
   src/agent.cpp
-  src/visualize.cpp)
+  src/visualize.cpp
+  src/view_handler.cpp)
 target_link_libraries(mobile_swarm 
   ${catkin_LIBRARIES} ${Pangolin_LIBRARIES}  ${OpenCV_LIBS})
 

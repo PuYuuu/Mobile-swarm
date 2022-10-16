@@ -1,9 +1,15 @@
+#include <chrono>
+#include <ctime>
+
 #include "../include/common_include.h"
 #include "../include/visualize.h"
 #include "../include/agent.h"
+#include "../include/view_handler.h"
+
+#define SCAN_SHOW_FPS 30
 
 using namespace std;
-#define SCAN_SHOW_FPS 30
+
 const constexpr int FRAME_DELAY_TIME = static_cast<int>(1000 / SCAN_SHOW_FPS);
 const constexpr int FEATURE_IMAGE_WIDTH = 640;
 const constexpr int FEATURE_IMAGE_HEIGHT = 480;
@@ -18,7 +24,7 @@ bool shouldQuit = false;
 
 int main(int argc, char** argv)
 {
-    ros::init(argc,argv,"ECUSTBot_Server");
+    ros::init(argc,argv,"Mobile_Swarm_Server");
     ros::NodeHandle n;
 
     Agent vins_1("vins_1", &n);
@@ -52,20 +58,20 @@ void MainShow()
         return ;
     }
 
-    vector<string> _viewPort_Str = {"mainView", "agent_1", "agent_2", "agent_3", "agent_4"};
+    vector<string> _viewPort_Str = {"mainView", "agent_0", "agent_1", "agent_2"};
     int _curViewPort = 0;
 
-    pangolin::CreateWindowAndBind("ECUSTBot",1080,720);
+    pangolin::CreateWindowAndBind("Mobile Swarm",1080,720);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     pangolin::OpenGlRenderState s_cam(
             pangolin::ProjectionMatrix(1080,720,420,420,320,320,0.2,100),
-            pangolin::ModelViewLookAt(-10,0,12, -10,0,0, pangolin::AxisY)
+            pangolin::ModelViewLookAt(-1,1.5,3,-1,1.5,0, pangolin::AxisY)
     );
     
-    pangolin::Handler3D handler(s_cam);
+    pangolin::myHandler handler(s_cam);
     pangolin::View& d_cam = pangolin::CreateDisplay()
             .SetBounds(0.0, 1.0, 0.0, 1.0, -1080.0f/720.0f)
             .SetHandler(&handler);
@@ -98,20 +104,21 @@ void MainShow()
         .SetLock(pangolin::LockLeft, pangolin::LockBottom);
     pangolin::GlTexture _imageTexture_3(FEATURE_IMAGE_WIDTH,FEATURE_IMAGE_HEIGHT,
         GL_RGB,false,0,GL_BGR,GL_UNSIGNED_BYTE);
-    while(!pangolin::ShouldQuit() && !shouldQuit)
-    {                
+
+    while(!pangolin::ShouldQuit() && !shouldQuit) {  
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         d_cam.Activate(s_cam);
 
         if (pangolin::Pushed(_resetBotton)) {
             s_cam.SetProjectionMatrix(pangolin::ProjectionMatrix(1080,720,420,420,320,320,0.2,100));
-            s_cam.SetModelViewMatrix(pangolin::ModelViewLookAt(-10,0,12, -10,0,0, pangolin::AxisY));
+            s_cam.SetModelViewMatrix(pangolin::ModelViewLookAt(-1,1.5,3,-1,1.5,0, pangolin::AxisY));
         }
 
         _curViewPort = _viewPort.Get();
         _viewPortStr = _viewPort_Str[_curViewPort];
         if (_curViewPort != 0) {
-            _curCoordinate = "[" + botCoor_f2str((*agents[_curViewPort - 1]).getBotCoor()) + "]";  
+            _curCoordinate = botCoor_f2str((*agents[_curViewPort - 1]).getBotCoor());  
         } else {
             _curCoordinate = "[]";
         }
@@ -247,7 +254,7 @@ void MainShow()
     }
 
     shouldQuit = true;
-    pangolin::DestroyWindow("ECUSTBot");
+    pangolin::DestroyWindow("Mobile Swarm");
     return ;
 }
 
