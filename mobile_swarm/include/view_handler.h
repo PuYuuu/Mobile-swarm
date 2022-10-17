@@ -3,13 +3,14 @@
 #include <chrono>
 
 #include <ros/ros.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <pangolin/pangolin.h>
 
 namespace pangolin {
 
 struct PANGOLIN_EXPORT myHandler : Handler
 {
-    myHandler(OpenGlRenderState& cam_state, AxisDirection enforce_up=AxisNone, float trans_scale=0.01f, float zoom_fraction= PANGO_DFLT_HANDLER3D_ZF);
+    myHandler(OpenGlRenderState& cam_state, ros::NodeHandle* n, AxisDirection enforce_up=AxisNone, float trans_scale=0.01f, float zoom_fraction= PANGO_DFLT_HANDLER3D_ZF);
 
     virtual bool ValidWinDepth(GLprecision depth);
     virtual void PixelUnproject( View& view, GLprecision winx, GLprecision winy, GLprecision winz, GLprecision Pc[3]);
@@ -36,6 +37,9 @@ private:
 
     MouseButton last_press_button;
     std::chrono::time_point<std::chrono::steady_clock> last_press_t;
+
+    ros::NodeHandle* _n;
+    ros::Publisher pub_target_pos;
 };
 
 }

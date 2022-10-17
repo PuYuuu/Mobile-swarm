@@ -114,6 +114,15 @@ void DrawPath(const list<vector<float>>& botPath, int idx)
     glEnd();
 }
 
+void DrawTargetPos(double pos[])
+{
+    glPointSize(25.0);
+    glBegin( GL_POINTS );       
+    glColor3f(1.0,0.0,0.0);
+    glVertex3f(pos[0], pos[1], 0);
+    glEnd();
+}
+
 // 将坐标表示的单精度浮点数转换为保留小数点后三位的字符串
 string botCoor_f2str(const vector<float>& botPos)
 {

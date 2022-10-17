@@ -15,12 +15,15 @@ const constexpr int FEATURE_IMAGE_WIDTH = 640;
 const constexpr int FEATURE_IMAGE_HEIGHT = 480;
 
 // 函数声明
-void MainShow(void);
+void MainShow(ros::NodeHandle* n);
 void RosSpin(void);
+void tarCallback(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
 // 全局变量定义
 vector<Agent*> agents;
 bool shouldQuit = false;
+bool showTargetPos = false;
+double tar_pos[3];
 
 int main(int argc, char** argv)
 {
@@ -34,7 +37,7 @@ int main(int argc, char** argv)
     agents.emplace_back(&vins_2);
     agents.emplace_back(&vins_3);
              
-    std::thread MainShow_thread(MainShow);
+    std::thread MainShow_thread(MainShow, &n);
     std::thread RosSpin_thread(RosSpin);
     MainShow_thread.join();
     RosSpin_thread.join();
@@ -52,11 +55,13 @@ void RosSpin()
     return ;
 }
 
-void MainShow()
+void MainShow(ros::NodeHandle* n)
 {
     if (agents.size() != 3) {
         return ;
     }
+
+    ros::Subscriber sub_tar = n->subscribe("target_pos", 1000, tarCallback);
 
     vector<string> _viewPort_Str = {"mainView", "agent_0", "agent_1", "agent_2"};
     int _curViewPort = 0;
@@ -71,7 +76,7 @@ void MainShow()
             pangolin::ModelViewLookAt(-1,1.5,3,-1,1.5,0, pangolin::AxisY)
     );
     
-    pangolin::myHandler handler(s_cam);
+    pangolin::myHandler handler(s_cam, n);
     pangolin::View& d_cam = pangolin::CreateDisplay()
             .SetBounds(0.0, 1.0, 0.0, 1.0, -1080.0f/720.0f)
             .SetHandler(&handler);
@@ -111,6 +116,7 @@ void MainShow()
         d_cam.Activate(s_cam);
 
         if (pangolin::Pushed(_resetBotton)) {
+            showTargetPos = false;
             s_cam.SetProjectionMatrix(pangolin::ProjectionMatrix(1080,720,420,420,320,320,0.2,100));
             s_cam.SetModelViewMatrix(pangolin::ModelViewLookAt(-1,1.5,3,-1,1.5,0, pangolin::AxisY));
         }
@@ -249,6 +255,10 @@ void MainShow()
             _showFeatureImg_3.show = false;
         }
 
+        if (showTargetPos) {
+            DrawTargetPos(tar_pos);
+        }
+
         pangolin::FinishFrame();
         usleep(FRAME_DELAY_TIME);
     }
@@ -258,4 +268,10 @@ void MainShow()
     return ;
 }
 
+void tarCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    showTargetPos = true;
+    tar_pos[0] = msg->data[0];
+    tar_pos[1] = msg->data[1];
+}
 

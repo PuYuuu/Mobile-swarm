@@ -2,11 +2,12 @@
 
 namespace pangolin {
 
-myHandler::myHandler(OpenGlRenderState& cam_state, AxisDirection enforce_up, float trans_scale, float zoom_fraction)
-    : cam_state(&cam_state), enforce_up(enforce_up), tf(trans_scale), zf(zoom_fraction), cameraspec(CameraSpecOpenGl), last_z(0.8)
+myHandler::myHandler(OpenGlRenderState& cam_state, ros::NodeHandle* n, AxisDirection enforce_up, float trans_scale, float zoom_fraction)
+    : cam_state(&cam_state), _n(n), enforce_up(enforce_up), tf(trans_scale), zf(zoom_fraction), cameraspec(CameraSpecOpenGl), last_z(0.8)
 {
     SetZero<3,1>(rot_center);
     last_press_t = std::chrono::steady_clock::now();
+    pub_target_pos = _n->advertise<std_msgs::Float32MultiArray>("target_pos", 1000); 
 }
 
 bool myHandler::ValidWinDepth(GLprecision depth)
@@ -93,7 +94,12 @@ void myHandler::Mouse(View& display, MouseButton button, int x, int y, bool pres
             OpenGlMatrix& spec = cam_state->GetModelViewMatrix();
             LieMul4x4bySE3<>(spec.m,T_nc,spec.m);
         } else if (double_click && button == MouseButtonRight) {
-            
+            std_msgs::Float32MultiArray tar_pos;          
+            tar_pos.data.emplace_back(Pw[0]);    
+            tar_pos.data.emplace_back(Pw[1]);
+            tar_pos.data.emplace_back(0);
+            pub_target_pos.publish(tar_pos);
+            ROS_WARN("Publish the swarm target postion:\n\tpos_x = %f, pox_y = %f", Pw[0], Pw[1]);
         }
         
         last_press_button = button;
