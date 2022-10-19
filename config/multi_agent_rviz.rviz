@@ -9,11 +9,9 @@ Panels:
         - /VIO31/Path1
         - /VIO41/Path1
         - /VIO51/Path1
-        - /pose_graph1/Sequence51
         - /TF1/Frames1
-        - /Marker1/Status1
-      Splitter Ratio: 0.465115994
-    Tree Height: 856
+      Splitter Ratio: 0.4651159942150116
+    Tree Height: 809
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -22,7 +20,7 @@ Panels:
       - /2D Nav Goal1
       - /Publish Point1
     Name: Tool Properties
-    Splitter Ratio: 0.588679016
+    Splitter Ratio: 0.5886790156364441
   - Class: rviz/Views
     Expanded:
       - /Current View1
@@ -34,12 +32,16 @@ Panels:
     SyncMode: 0
     SyncSource: sequence2 image
   - Class: rviz/Displays
-    Help Height: 78
+    Help Height: 85
     Name: Displays
     Property Tree Widget:
       Expanded: ~
       Splitter Ratio: 0.5
-    Tree Height: 359
+    Tree Height: 349
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -49,7 +51,7 @@ Visualization Manager:
       Color: 130; 130; 130
       Enabled: false
       Line Style:
-        Line Width: 0.0299999993
+        Line Width: 0.029999999329447746
         Value: Lines
       Name: Grid
       Normal Cell Count: 0
@@ -72,10 +74,10 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz/Path
       Color: 255; 0; 0
-      Enabled: true
-      Head Diameter: 0.300000012
-      Head Length: 0.200000003
-      Length: 0.300000012
+      Enabled: false
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.5
       Name: ground_truth_path
@@ -85,12 +87,12 @@ Visualization Manager:
         Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
-      Radius: 0.0299999993
-      Shaft Diameter: 0.100000001
-      Shaft Length: 0.100000001
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
       Topic: /benchmark_publisher/path
       Unreliable: false
-      Value: true
+      Value: false
     - Class: rviz/Image
       Enabled: false
       Image Topic: /agent0/feature_tracker/feature_img
@@ -110,11 +112,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 0; 255; 0
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Billboards
-          Line Width: 0.0299999993
+          Line Width: 0.029999999329447746
           Name: Path
           Offset:
             X: 65
@@ -122,9 +124,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /vins_1/vins_estimator/path
           Unreliable: false
           Value: true
@@ -151,15 +153,13 @@ Visualization Manager:
           Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 4096
           Min Color: 0; 0; 0
-          Min Intensity: 0
           Name: current_point
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
           Size (Pixels): 1
-          Size (m): 0.00999999978
+          Size (m): 0.009999999776482582
           Style: Points
           Topic: /agent1/vins_estimator/point_cloud
           Unreliable: false
@@ -175,11 +175,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 255; 170; 0
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.0299999993
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Path
           Offset:
             X: 53
@@ -187,9 +187,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /vins_2/vins_estimator/path
           Unreliable: false
           Value: true
@@ -216,15 +216,13 @@ Visualization Manager:
           Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 4096
           Min Color: 0; 0; 0
-          Min Intensity: 0
           Name: current_point
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
           Size (Pixels): 1
-          Size (m): 0.00999999978
+          Size (m): 0.009999999776482582
           Style: Points
           Topic: /agent2/vins_estimator/point_cloud
           Unreliable: false
@@ -240,11 +238,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 255; 0; 0
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.0299999993
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Path
           Offset:
             X: 45
@@ -252,9 +250,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /vins_3/vins_estimator/path
           Unreliable: false
           Value: true
@@ -281,15 +279,13 @@ Visualization Manager:
           Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 4096
           Min Color: 0; 0; 0
-          Min Intensity: 0
           Name: current_point
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
           Size (Pixels): 1
-          Size (m): 0.00999999978
+          Size (m): 0.009999999776482582
           Style: Points
           Topic: /agent3/vins_estimator/point_cloud
           Unreliable: false
@@ -303,13 +299,13 @@ Visualization Manager:
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 255; 255; 255
+          Color: 0; 128; 255
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.0299999993
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Path
           Offset:
             X: 30
@@ -317,9 +313,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /vins_4/vins_estimator/path
           Unreliable: false
           Value: true
@@ -346,15 +342,13 @@ Visualization Manager:
           Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 4096
           Min Color: 0; 0; 0
-          Min Intensity: 0
           Name: current_point
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
           Size (Pixels): 1
-          Size (m): 0.00999999978
+          Size (m): 0.009999999776482582
           Style: Points
           Topic: /agent3/vins_estimator/point_cloud
           Unreliable: false
@@ -370,11 +364,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 0; 170; 255
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
-          Line Width: 0.0299999993
+          Line Width: 0.029999999329447746
           Name: Path
           Offset:
             X: 15
@@ -382,9 +376,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /vins_5/vins_estimator/path
           Unreliable: false
           Value: true
@@ -411,22 +405,20 @@ Visualization Manager:
           Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 4096
           Min Color: 0; 0; 0
-          Min Intensity: 0
           Name: current_point
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
           Size (Pixels): 1
-          Size (m): 0.00999999978
+          Size (m): 0.009999999776482582
           Style: Points
           Topic: /agent3/vins_estimator/point_cloud
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-      Enabled: true
+      Enabled: false
       Name: VIO5
     - Class: rviz/Group
       Displays:
@@ -435,11 +427,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 0; 255; 0
           Enabled: false
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
-          Line Width: 0.0299999993
+          Line Width: 0.029999999329447746
           Name: pose_graph_path
           Offset:
             X: 0
@@ -447,9 +439,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/pose_graph_path
           Unreliable: false
           Value: false
@@ -457,12 +449,12 @@ Visualization Manager:
           Buffer Length: 1
           Class: rviz/Path
           Color: 255; 255; 255
-          Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
+          Enabled: false
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
-          Line Width: 0.0299999993
+          Line Width: 0.029999999329447746
           Name: base_path
           Offset:
             X: 0
@@ -470,20 +462,20 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/path_0
           Unreliable: false
-          Value: true
+          Value: false
         - Class: rviz/MarkerArray
-          Enabled: false
+          Enabled: true
           Marker Topic: /pose_graph/pose_graph
           Name: loop_visual
           Namespaces:
             {}
           Queue Size: 100
-          Value: false
+          Value: true
         - Class: rviz/MarkerArray
           Enabled: false
           Marker Topic: /pose_graph/camera_pose_visual
@@ -517,11 +509,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 25; 255; 0
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Sequence1
           Offset:
             X: 0
@@ -529,9 +521,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/path_1
           Unreliable: false
           Value: true
@@ -540,11 +532,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 255; 170; 0
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Sequence2
           Offset:
             X: 0
@@ -552,9 +544,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/path_2
           Unreliable: false
           Value: true
@@ -563,11 +555,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 255; 0; 0
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Sequence3
           Offset:
             X: 0
@@ -575,22 +567,22 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/path_3
           Unreliable: false
           Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 255; 255; 255
+          Color: 0; 128; 255
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
-          Line Style: Lines
-          Line Width: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Billboards
+          Line Width: 0.029999999329447746
           Name: Sequence4
           Offset:
             X: 0
@@ -598,22 +590,22 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/path_4
           Unreliable: false
           Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 0; 170; 255
+          Color: 255; 255; 255
           Enabled: true
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
-          Line Width: 0.0299999993
+          Line Width: 0.029999999329447746
           Name: Sequence5
           Offset:
             X: 0
@@ -621,9 +613,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/path_5
           Unreliable: false
           Value: true
@@ -632,11 +624,11 @@ Visualization Manager:
           Class: rviz/Path
           Color: 25; 255; 0
           Enabled: false
-          Head Diameter: 0.300000012
-          Head Length: 0.200000003
-          Length: 0.300000012
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
-          Line Width: 0.0299999993
+          Line Width: 0.029999999329447746
           Name: no_loop_path
           Offset:
             X: 0
@@ -644,9 +636,9 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Radius: 0.0299999993
-          Shaft Diameter: 0.100000001
-          Shaft Length: 0.100000001
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic: /pose_graph/no_loop_path
           Unreliable: false
           Value: false
@@ -701,7 +693,7 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/Image
-      Enabled: true
+      Enabled: false
       Image Topic: /vins_5/feature_tracker/feature_img
       Max Value: 1
       Median window: 5
@@ -711,7 +703,7 @@ Visualization Manager:
       Queue Size: 2
       Transport Hint: raw
       Unreliable: false
-      Value: true
+      Value: false
     - Class: rviz/TF
       Enabled: false
       Frame Timeout: 15
@@ -744,7 +736,8 @@ Visualization Manager:
       Value: true
   Enabled: true
   Global Options:
-    Background Color: 0; 0; 0
+    Background Color: 255; 255; 255
+    Default Light: true
     Fixed Frame: world
     Frame Rate: 30
   Name: root
@@ -754,7 +747,10 @@ Visualization Manager:
     - Class: rviz/FocusCamera
     - Class: rviz/Measure
     - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
       Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
     - Class: rviz/SetGoal
       Topic: /move_base_simple/goal
     - Class: rviz/PublishPoint
@@ -763,21 +759,21 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 3.07002783
+      Angle: 2.9500300884246826
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
-        Stereo Eye Separation: 0.0599999987
+        Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Invert Z Axis: false
       Name: Current View
-      Near Clip Distance: 0.00999999978
-      Scale: 16.9972897
+      Near Clip Distance: 0.009999999776482582
+      Scale: 37.69776153564453
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 37.0687447
-      Y: -2.9818809
+      X: 1.9946726560592651
+      Y: 0.3203560709953308
     Saved: ~
 Window Geometry:
   Displays:
@@ -785,7 +781,7 @@ Window Geometry:
   Height: 1056
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd00000004000000000000018900000399fc0200000010fb000000100044006900730070006c006100790073010000002800000399000000dd00fffffffb0000001e00730065007100750065006e00630065003400200069006d00610067006503000008b5000000f3000000d4000000c6fb0000000a0049006d00610067006501000000280000013d0000000000000000fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001200720061007700200049006d0061006700650000000028000000300000000000000000fc000000e4000001380000000000fffffffaffffffff0100000002fb00000020006c006f006f0070005f006d0061007400630068005f0069006d0061006700650000000000ffffffff000000b300fffffffb0000001a0074007200610063006b0065006400200069006d0061006700650000000000000001df0000009300fffffffc000000280000011e0000000000fffffffa000000000100000002fb0000001200720061007700200049006d0061006700650000000000ffffffff0000000000000000fb0000001a0074007200610063006b0065006400200069006d0061006700650100000000000002370000000000000000fb0000001000410052005f0069006d0061006700650100000373000000160000000000000000fb0000001200720061007700200069006d006100670065010000038f000000160000000000000000fb0000001e00730065007100750065006e00630065003500200069006d0061006700650300000989000000f3000000d2000000c6000000010000020800000399fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc00000028000003990000000000fffffffaffffffff0100000002fb000000100044006900730070006c0061007900730000000000ffffffff0000016a00fffffffb0000000a00560069006500770073000000023f0000016a0000010f00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073f00000131fc0100000004fb0000001e00730065007100750065006e00630065003100200069006d006100670065030000063d000000f3000000d4000000c6fb0000001e00730065007100750065006e00630065003200200069006d0061006700650300000710000000f3000000d4000000c6fb0000001e00730065007100750065006e00630065003300200069006d00610067006503000007e3000000f3000000d2000000c6fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073f0000003bfc0100000002fb0000000800540069006d006501000000000000073f0000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000005b00000039900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000027a00000370fc0200000010fb000000100044006900730070006c006100790073010000004700000370000000f100fffffffb0000001e00730065007100750065006e00630065003400200069006d00610067006503000008b5000000f3000000d4000000c6fb0000000a0049006d00610067006501000000280000013d0000000000000000fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006e00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001200720061007700200049006d0061006700650000000028000000300000000000000000fc00000303000000b40000000000fffffffaffffffff0100000002fb00000020006c006f006f0070005f006d0061007400630068005f0069006d0061006700650000000000ffffffff000000d100fffffffb0000001a0074007200610063006b0065006400200069006d0061006700650000000000000001df000000aa00fffffffc000000280000011e0000000000fffffffa000000000100000002fb0000001200720061007700200049006d0061006700650000000000ffffffff0000000000000000fb0000001a0074007200610063006b0065006400200069006d0061006700650100000000000002370000000000000000fb0000001000410052005f0069006d0061006700650100000373000000160000000000000000fb0000001200720061007700200069006d006100670065010000038f000000160000000000000000fb0000001e00730065007100750065006e00630065003500200069006d0061006700650200000780000000f300000280000001e0000000010000020800000399fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc00000028000003990000000000fffffffaffffffff0100000002fb000000100044006900730070006c0061007900730000000000ffffffff0000016100fffffffb0000000a00560069006500770073000000023f0000016a0000010200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073f00000131fc0100000004fb0000001e00730065007100750065006e00630065003100200069006d006100670065030000063d000000f3000000d4000000c6fb0000001e00730065007100750065006e00630065003200200069006d0061006700650300000710000000f3000000d4000000c6fb0000001e00730065007100750065006e00630065003300200069006d00610067006503000007e3000000f3000000d2000000c6fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073f00000041fc0100000002fb0000000800540069006d006501000000000000073f0000037100fffffffb0000000800540069006d00650100000000000004500000000000000000000004be0000037000000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -795,8 +791,8 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1855
-  X: 1345
-  Y: 24
+  X: 186
+  Y: 200
   loop_match_image:
     collapsed: false
   sequence1 image:
