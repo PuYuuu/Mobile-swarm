@@ -6,6 +6,7 @@
 #include <std_msgs/Bool.h>
 #include <cv_bridge/cv_bridge.h>
 #include <message_filters/subscriber.h>
+#include <image_transport/image_transport.h>
 
 #include "feature_tracker.h"
 
@@ -15,8 +16,9 @@ vector<uchar> r_status;
 vector<float> r_err;
 queue<sensor_msgs::ImageConstPtr> img_buf;
 
-ros::Publisher pub_img,pub_match;
+ros::Publisher pub_img;
 ros::Publisher pub_restart;
+image_transport::Publisher pub_match;
 
 FeatureTracker trackerData[NUM_OF_CAM];
 double first_image_time;
@@ -207,6 +209,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "feature_tracker");
     ros::NodeHandle n;
+    image_transport::ImageTransport it(n);
     ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
     readParameters(n);
 
@@ -231,7 +234,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub_img = n.subscribe(IMAGE_TOPIC, 100, img_callback);
 
     pub_img = n.advertise<sensor_msgs::PointCloud>("feature_tracker/feature", 1000);
-    pub_match = n.advertise<sensor_msgs::Image>("feature_tracker/feature_img",1000);
+    pub_match = it.advertise("feature_tracker/feature_img",1000);
     pub_restart = n.advertise<std_msgs::Bool>("feature_tracker/restart",1000);
     /*
     if (SHOW_TRACK)

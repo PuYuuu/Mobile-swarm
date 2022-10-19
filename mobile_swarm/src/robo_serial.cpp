@@ -4,82 +4,72 @@
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/Point32.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Float32MultiArray.h>
 
 #include <iostream>
 #include <cmath>
 
 // 全局变量
-uint8_t sendBuffer[26];
+uint8_t sendBuffer[32];
 
+static void bufferConvert(uint8_t* buffer, int data0, int data1)
+{
+    uint16_t _x_abs = abs(data0);
+    uint16_t _y_abs = abs(data1);
+
+    buffer[0] = ((data0 < 0) ? 0x01 : 0x00);
+    buffer[1] = _x_abs / 256;       // x坐标高8位 单位mm
+    buffer[2] = _x_abs % 256;       // x坐标低8位
+    buffer[3] = ((data1 < 0) ? 0x01 : 0x00);
+    buffer[4] = _y_abs / 256;       // y坐标高8位
+    buffer[5] = _y_abs % 256;       // y坐标低8位
+}
 
 void path1Callback(const nav_msgs::Path::ConstPtr& msg)
 {
     geometry_msgs::PoseStamped _lastest_PoseStamped = msg->poses.back();
-    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * 1000);
-    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * 1000);
-    uint16_t _pos_x_abs = abs(_pos_x);
-    uint16_t _pos_y_abs = abs(_pos_y);
+    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * -1000);
+    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * -1000);
 
-    sendBuffer[0] = ((_pos_x < 0) ? 0x01 : 0x00);
-    sendBuffer[1] = _pos_x_abs / 256;       // x坐标高8位 单位mm
-    sendBuffer[2] = _pos_x_abs % 256;       // x坐标低8位
-    sendBuffer[3] = ((_pos_y < 0) ? 0x01 : 0x00);
-    sendBuffer[4] = _pos_y_abs / 256;       // y坐标高8位
-    sendBuffer[5] = _pos_y_abs % 256;       // y坐标低8位
+    bufferConvert(sendBuffer, _pos_x, _pos_y);
 }
 
 void path2Callback(const nav_msgs::Path::ConstPtr& msg)
 {
     geometry_msgs::PoseStamped _lastest_PoseStamped = msg->poses.back();
-    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * 1000);
-    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * 1000);
-    uint16_t _pos_x_abs = abs(_pos_x);
-    uint16_t _pos_y_abs = abs(_pos_y);
+    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * -1000);
+    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * -1000);
 
-    sendBuffer[6] = ((_pos_x < 0) ? 0x01 : 0x00);
-    sendBuffer[7] = _pos_x_abs / 256;       // x坐标高8位 单位mm
-    sendBuffer[8] = _pos_x_abs % 256;       // x坐标低8位
-    sendBuffer[9] = ((_pos_y < 0) ? 0x01 : 0x00);
-    sendBuffer[10] = _pos_y_abs / 256;       // y坐标高8位
-    sendBuffer[11] = _pos_y_abs % 256;       // y坐标低8位
+    bufferConvert(sendBuffer + 6, _pos_x, _pos_y);
 }
 
 void path3Callback(const nav_msgs::Path::ConstPtr& msg)
 {
     geometry_msgs::PoseStamped _lastest_PoseStamped = msg->poses.back();
-    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * 1000);
-    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * 1000);
-    uint16_t _pos_x_abs = abs(_pos_x);
-    uint16_t _pos_y_abs = abs(_pos_y);
-
-    sendBuffer[12] = ((_pos_x < 0) ? 0x01 : 0x00);
-    sendBuffer[13] = _pos_x_abs / 256;       // x坐标高8位 单位mm
-    sendBuffer[14] = _pos_x_abs % 256;       // x坐标低8位
-    sendBuffer[15] = ((_pos_y < 0) ? 0x01 : 0x00);
-    sendBuffer[16] = _pos_y_abs / 256;       // y坐标高8位
-    sendBuffer[17] = _pos_y_abs % 256;       // y坐标低8位
+    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * -1000);
+    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * -1000);
+    
+    bufferConvert(sendBuffer + 12, _pos_x, _pos_y);
 }
 
 void obstCallback(const geometry_msgs::Point32::ConstPtr& msg)
 {
     geometry_msgs::Point32 _obstaction = *msg; 
-    // int _obs_xTmp = (int)(_obstaction.x * 1000.0);
-    // int _obs_yTmp = (int)(_obstaction.y * 1000.0);
-    // int _obs_x = -_obs_yTmp;
-    // int _obs_y = _obs_xTmp;         // 障碍物坐标系和里程计坐标系相差90度
+    // 障碍物坐标系和里程计坐标系相差90度
     int _obs_x = -1 * (int)(_obstaction.y * 1000.0);
     int _obs_y = (int)(_obstaction.x * 1000.0);
-    uint16_t _obs_x_abs = abs(_obs_x);
-    uint16_t _obs_y_abs = abs(_obs_y);
-     
-    sendBuffer[18] = ((_obs_x < 0) ? 0x01 : 0x00);
-    sendBuffer[19] = (int)(_obs_x_abs / 256);   // x坐标高8位 单位mm
-    sendBuffer[20] = (int)(_obs_x_abs % 256);  // x坐标低8位
-    sendBuffer[21] = ((_obs_y < 0) ? 0x01 : 0x00);
-    sendBuffer[22] = (int)(_obs_y_abs / 256);  // y坐标高8位 单位mm
-    sendBuffer[23] = (int)(_obs_y_abs % 256);  // y坐标低8位
+    
+    bufferConvert(sendBuffer + 18, _obs_x, _obs_y);
 }
 
+void goalCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+    std_msgs::Float32MultiArray _goal = *msg;
+    int _pos_x = (int)(_goal.data[0] * 1000);
+    int _pos_y = (int)(_goal.data[1] * 1000);
+
+    bufferConvert(sendBuffer + 24, _pos_x, _pos_y);
+}
 void debugInfoPrint(void)
 {
     int _coor_x, _coor_y;
@@ -125,19 +115,20 @@ int main(int argc, char** argv)
     } else {
         return -1;
     }
-    sendBuffer[24] = 0x0d;
-    sendBuffer[25] = 0x0a;
+    sendBuffer[30] = 0x0d;
+    sendBuffer[31] = 0x0a;
 
     ros::Subscriber subPath_1 = n.subscribe("/pose_graph/path_1", 1000, path1Callback);
     ros::Subscriber subPath_2 = n.subscribe("/pose_graph/path_2", 1000, path2Callback);
     ros::Subscriber subPath_3 = n.subscribe("/pose_graph/path_3", 1000, path3Callback);
     ros::Subscriber subObst = n.subscribe("obs_coor", 1000, obstCallback);
+    ros::Subscriber subGoal = n.subscribe("/target_pos", 100, goalCallback);
     ROS_INFO_STREAM("Node \"car_serial\" initial successful !");
 
     ros::Rate loop_rate(20);        // 以20Hz频率向下发送更新的数据
     int loop_rate_count = 0;
     while(ros::ok()){
-        sp.write(sendBuffer, 26);
+        sp.write(sendBuffer, 32);
         if (print_debug) {          // 1s打印一次调试信息
             if (loop_rate_count >= 20) {
                 debugInfoPrint();

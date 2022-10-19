@@ -123,6 +123,20 @@ void DrawTargetPos(double pos[])
     glEnd();
 }
 
+void UploadImg(cv::Mat& img, pangolin::View& upview, pangolin::GlTexture& uptext, cv::Size upsize)
+{
+    if (!img.empty()) {
+        cv::resize(img, img, upsize);
+    }
+    if (img.size().width == upsize.width && 
+        img.size().height == upsize.height) {
+        upview.Activate();
+        uptext.Upload(img.data, GL_BGR, GL_UNSIGNED_BYTE);
+        glColor3f(1.0,1.0,1.0);
+        uptext.RenderToViewportFlipY();
+    }
+}   
+
 // 将坐标表示的单精度浮点数转换为保留小数点后三位的字符串
 string botCoor_f2str(const vector<float>& botPos)
 {

@@ -24,6 +24,7 @@ vector<Agent*> agents;
 bool shouldQuit = false;
 bool showTargetPos = false;
 double tar_pos[3];
+cv::Size convertImgSize = cv::Size(FEATURE_IMAGE_WIDTH, FEATURE_IMAGE_HEIGHT);
 
 int main(int argc, char** argv)
 {
@@ -42,7 +43,6 @@ int main(int argc, char** argv)
     MainShow_thread.join();
     RosSpin_thread.join();
 
-    // ros::spin();
     return 0;
 }
 
@@ -197,29 +197,9 @@ void MainShow(ros::NodeHandle* n)
                 cv::Mat _fImgTmp_2 = (*agents[1]).getFeatureImg();
                 cv::Mat _fImgTmp_3 = (*agents[2]).getFeatureImg();
 
-                if (_fImgTmp_1.size().width == FEATURE_IMAGE_WIDTH && 
-                    _fImgTmp_1.size().height == FEATURE_IMAGE_HEIGHT) {
-                    _showFeatureImg_1.Activate();
-                    _imageTexture_1.Upload(_fImgTmp_1.data, GL_BGR, GL_UNSIGNED_BYTE);
-                    glColor3f(1.0,1.0,1.0);
-                    _imageTexture_1.RenderToViewportFlipY();
-                }
-
-                if (_fImgTmp_2.size().width == FEATURE_IMAGE_WIDTH && 
-                    _fImgTmp_2.size().height == FEATURE_IMAGE_HEIGHT) {
-                    _showFeatureImg_2.Activate();
-                    _imageTexture_2.Upload(_fImgTmp_2.data, GL_BGR, GL_UNSIGNED_BYTE);
-                    glColor3f(1.0,1.0,1.0);
-                    _imageTexture_2.RenderToViewportFlipY();
-                }
-
-                if (_fImgTmp_3.size().width == FEATURE_IMAGE_WIDTH && 
-                    _fImgTmp_3.size().height == FEATURE_IMAGE_HEIGHT) {
-                    _showFeatureImg_3.Activate();
-                    _imageTexture_3.Upload(_fImgTmp_3.data, GL_BGR, GL_UNSIGNED_BYTE);
-                    glColor3f(1.0,1.0,1.0);
-                    _imageTexture_3.RenderToViewportFlipY();
-                }
+                UploadImg(_fImgTmp_1, _showFeatureImg_1, _imageTexture_1, convertImgSize);
+                UploadImg(_fImgTmp_2, _showFeatureImg_2, _imageTexture_2, convertImgSize);
+                UploadImg(_fImgTmp_3, _showFeatureImg_3, _imageTexture_3, convertImgSize);
 
                 _showFeatureImg_1.show = true;
                 _showFeatureImg_2.show = true;
@@ -233,14 +213,7 @@ void MainShow(ros::NodeHandle* n)
                     }
                 }
                 cv::Mat _fImgTmp = (*agents[_curViewPort - 1]).getFeatureImg();
-
-                if (_fImgTmp.size().width == FEATURE_IMAGE_WIDTH && 
-                    _fImgTmp.size().height == FEATURE_IMAGE_HEIGHT) {
-                    _showFeatureImg_1.Activate();
-                    _imageTexture_1.Upload(_fImgTmp.data, GL_BGR, GL_UNSIGNED_BYTE);
-                    glColor3f(1.0,1.0,1.0);
-                    _imageTexture_1.RenderToViewportFlipY();
-                }
+                UploadImg(_fImgTmp, _showFeatureImg_1, _imageTexture_1, convertImgSize);
 
                 _showFeatureImg_1.show = true;
                 _showFeatureImg_2.show = false;

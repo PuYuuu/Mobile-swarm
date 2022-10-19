@@ -7,7 +7,7 @@ myHandler::myHandler(OpenGlRenderState& cam_state, ros::NodeHandle* n, AxisDirec
 {
     SetZero<3,1>(rot_center);
     last_press_t = std::chrono::steady_clock::now();
-    pub_target_pos = _n->advertise<std_msgs::Float32MultiArray>("target_pos", 1000); 
+    pub_target_pos = _n->advertise<std_msgs::Float32MultiArray>("/target_pos", 1000); 
 }
 
 bool myHandler::ValidWinDepth(GLprecision depth)
