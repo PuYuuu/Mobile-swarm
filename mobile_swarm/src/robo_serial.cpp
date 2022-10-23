@@ -5,12 +5,19 @@
 #include <geometry_msgs/Point32.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <tf/transform_listener.h>
+#include <eigen3/Eigen/Dense>
 
 #include <iostream>
 #include <cmath>
+#include <string>
+
+using Eigen::Vector3d;
+using Eigen::Quaterniond;
 
 // 全局变量
 uint8_t sendBuffer[32];
+tf::TransformListener* tfListener;
 
 static void bufferConvert(uint8_t* buffer, int data0, int data1)
 {
@@ -25,29 +32,64 @@ static void bufferConvert(uint8_t* buffer, int data0, int data1)
     buffer[5] = _y_abs % 256;       // y坐标低8位
 }
 
-void path1Callback(const nav_msgs::Path::ConstPtr& msg)
+static void tfTransfer(const nav_msgs::Odometry::ConstPtr& msg, double& outputX, double& outputY)
 {
-    geometry_msgs::PoseStamped _lastest_PoseStamped = msg->poses.back();
-    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * -1000);
-    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * -1000);
+    tf::StampedTransform transform;
+    int sequence = std::stoi(msg->child_frame_id);
+    Quaterniond q(msg->pose.pose.orientation.w,
+                    msg->pose.pose.orientation.x,
+                    msg->pose.pose.orientation.y,
+                    msg->pose.pose.orientation.z);
+    Vector3d t(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
+
+    try{
+        tfListener->lookupTransform("/global", "/drone_" + std::to_string(sequence),
+                                ros::Time(0), transform);
+
+        tf::Vector3 tf_t = transform.getOrigin();
+        tf::Quaternion tf_q = transform.getRotation();
+        
+        Vector3d w_T_local = Vector3d(tf_t.x(), tf_t.y(), tf_t.z());
+        geometry_msgs::Quaternion g_Q;
+        tf::quaternionTFToMsg(tf_q, g_Q);   
+        Quaterniond w_Q_local(g_Q.w, g_Q.x, g_Q.y, g_Q.z);
+
+        q = w_Q_local * q;
+        t = w_Q_local * t + w_T_local;
+    }
+    catch (tf::TransformException &ex) {
+        //ROS_WARN("no %d transform yet", sequence);
+    }
+    outputX = t.x();
+    outputY = t.y();
+}
+
+void path1Callback(const nav_msgs::Odometry::ConstPtr& msg)
+{
+    double _pos_x = 0.0, _pos_y = 0.0;
+    tfTransfer(msg, _pos_x, _pos_y);
+    int _converted_x = (int)(_pos_x * -1000);
+    int _converted_y = (int)(_pos_y * -1000);
 
     bufferConvert(sendBuffer, _pos_x, _pos_y);
 }
 
-void path2Callback(const nav_msgs::Path::ConstPtr& msg)
+void path2Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    geometry_msgs::PoseStamped _lastest_PoseStamped = msg->poses.back();
-    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * -1000);
-    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * -1000);
+    double _pos_x = 0.0, _pos_y = 0.0;
+    tfTransfer(msg, _pos_x, _pos_y);
+    int _converted_x = (int)(_pos_x * -1000);
+    int _converted_y = (int)(_pos_y * -1000);
 
     bufferConvert(sendBuffer + 6, _pos_x, _pos_y);
 }
 
-void path3Callback(const nav_msgs::Path::ConstPtr& msg)
+void path3Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    geometry_msgs::PoseStamped _lastest_PoseStamped = msg->poses.back();
-    int _pos_x = (int)(_lastest_PoseStamped.pose.position.x * -1000);
-    int _pos_y = (int)(_lastest_PoseStamped.pose.position.y * -1000);
+    double _pos_x = 0.0, _pos_y = 0.0;
+    tfTransfer(msg, _pos_x, _pos_y);
+    int _converted_x = (int)(_pos_x * -1000);
+    int _converted_y = (int)(_pos_y * -1000);
     
     bufferConvert(sendBuffer + 12, _pos_x, _pos_y);
 }
@@ -96,6 +138,8 @@ int main(int argc, char** argv)
     bool print_debug;
     nh_private.getParam("print_debug", print_debug);
 
+    tfListener = new tf::TransformListener(n);
+
     // serial相关
     serial::Serial sp;                  // 创建一个serial类
     serial::Timeout to = serial::Timeout::simpleTimeout(30);   // 创建timeout
@@ -118,9 +162,9 @@ int main(int argc, char** argv)
     sendBuffer[30] = 0x0d;
     sendBuffer[31] = 0x0a;
 
-    ros::Subscriber subPath_1 = n.subscribe("/pose_graph/path_1", 1000, path1Callback);
-    ros::Subscriber subPath_2 = n.subscribe("/pose_graph/path_2", 1000, path2Callback);
-    ros::Subscriber subPath_3 = n.subscribe("/pose_graph/path_3", 1000, path3Callback);
+    ros::Subscriber subPath_1 = n.subscribe("/vins_1/vins_estimator/odometry", 1000, path1Callback);
+    ros::Subscriber subPath_2 = n.subscribe("/vins_2/vins_estimator/odometry", 1000, path2Callback);
+    ros::Subscriber subPath_3 = n.subscribe("/vins_3/vins_estimator/odometry", 1000, path3Callback);
     ros::Subscriber subObst = n.subscribe("obs_coor", 1000, obstCallback);
     ros::Subscriber subGoal = n.subscribe("/target_pos", 100, goalCallback);
     ROS_INFO_STREAM("Node \"car_serial\" initial successful !");

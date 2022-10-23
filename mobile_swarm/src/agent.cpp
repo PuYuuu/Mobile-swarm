@@ -13,6 +13,7 @@ Agent::Agent(string ns, ros::NodeHandle* n)
     _subLaserStr = "/" + ns + "/scan";
     _subObsStr = "/" + ns + "/obs_coor";
     _subImgStr = "/" + ns + "/feature_tracker/feature_img/compressed";
+    _subOdomStr = "/" + ns + "/vins_estimator/odometry";
 
     ROS_INFO_STREAM("\r\n\tAgent:" << ns 
         << "\r\n\tPath Topicname: \"" << _subPathStr
@@ -22,14 +23,16 @@ Agent::Agent(string ns, ros::NodeHandle* n)
         << "\"\r\n");
 
     // 保持订阅路径和障碍物话题
+    _subOdom = (*_n).subscribe(_subOdomStr, 1000, &Agent::odomCallback, this);
     _subObs  = (*_n).subscribe(_subObsStr, 1000, &Agent::obsCallback, this);
     _subPath = (*_n).subscribe(_subPathStr, 1000, &Agent::pathCallback, this);
 
+    _listener = new tf::TransformListener(*n);
 }
 
 Agent::~Agent()
 {
-
+    delete _listener;
 }
 
 // 注册ros节点的订阅函数
@@ -66,7 +69,7 @@ const vector<float>& Agent::getBotCoor(void)
     return botCoor;
 }
 
-const list<vector<float>>& Agent::getBotPath(void)
+const vector<vector<float>>& Agent::getBotPath(void)
 {
     std::unique_lock<std::mutex> lock_(pathData_mutex_);
     return botPath;
@@ -83,7 +86,7 @@ void Agent::startSubLaser(void)
     if (!_isSubLaser) {
         _subLaser = (*_n).subscribe(_subLaserStr, 1000, &Agent::scanCallback, this);
         _isSubLaser = true;
-        ROS_INFO_STREAM("Agent:" << _agentname << " start to subscribe laser topic!");
+        // ROS_INFO_STREAM("Agent:" << _agentname << " start to subscribe laser topic!");
     }
 }
 
@@ -92,7 +95,7 @@ void Agent::stopSubLaser(void)
     if (_isSubLaser) {
         _subLaser.shutdown();
         _isSubLaser = false;
-        ROS_INFO_STREAM("Agent:" << _agentname << " stop subscribing image topic!");
+        // ROS_INFO_STREAM("Agent:" << _agentname << " stop subscribing image topic!");
     }
 }
 
@@ -101,7 +104,7 @@ void Agent::startSubImg(void)
     if (!_isSubImg) {
         _subImg = (*_n).subscribe(_subImgStr, 1000, &Agent::imgCallback, this);
         _isSubImg = true;
-        ROS_INFO_STREAM("Agent:" << _agentname << " start to subscribe image topic!");
+        // ROS_INFO_STREAM("Agent:" << _agentname << " start to subscribe image topic!");
     }
 }
 
@@ -110,37 +113,14 @@ void Agent::stopSubImg(void)
     if (_isSubImg) {
         _subImg.shutdown();
         _isSubImg = false;
-        ROS_INFO_STREAM("Agent:" << _agentname << " stop subscribing image topic!");
+        // ROS_INFO_STREAM("Agent:" << _agentname << " stop subscribing image topic!");
     }
 }
 
-// void Agent::pathCallback(const nav_msgs::Path::ConstPtr& msg)
-// {
-//     std::unique_lock<std::mutex> lock1_(botData_mutex_);
-//     std::unique_lock<std::mutex> lock2_(pathData_mutex_);
-//     geometry_msgs::PoseStamped _lastest_PoseStamped;
-//     vector<float> _poseTmp(2);
-    
-//     _lastest_PoseStamped = msg->poses.back();
-//     botCoor[0] = -_lastest_PoseStamped.pose.position.x;
-//     botCoor[1] = -_lastest_PoseStamped.pose.position.y;
-//     botCoor[2] = _lastest_PoseStamped.pose.position.z;
-
-//     _poseTmp[0] = botCoor[0];
-//     _poseTmp[1] = botCoor[1];
-//     botPath.emplace_back(_poseTmp);
-//     // 当路径保存点数超过最大缓存，删除最早的路径点，防止内存溢出
-//     if (botPath.size() > MAX_PATH_QUEUE_SIZE) {
-//         botPath.pop_front();
-//     }
-// }
-
 void Agent::pathCallback(const nav_msgs::Path::ConstPtr& msg)
 {
-    std::unique_lock<std::mutex> lock1_(botData_mutex_);
-    std::unique_lock<std::mutex> lock2_(pathData_mutex_);
-    geometry_msgs::PoseStamped _lastest_PoseStamped;
-    vector<float> _poseTmp(2);
+    std::unique_lock<std::mutex> lock_(pathData_mutex_);
+    vector<float> _poseTmp(2, 0.f);
     
     botPath.clear();
     for (int i = 0; i < msg->poses.size(); ++i) {
@@ -148,10 +128,41 @@ void Agent::pathCallback(const nav_msgs::Path::ConstPtr& msg)
         _poseTmp[1] = -msg->poses[i].pose.position.y;
         botPath.emplace_back(_poseTmp); 
     }
-    if (!botPath.empty()) {
-        botCoor[0] = botPath.back()[0];
-        botCoor[1] = botPath.back()[1];
+}
+
+void Agent::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
+{
+    std::unique_lock<std::mutex> lock_(botData_mutex_);
+
+    tf::StampedTransform transform;
+    int sequence = std::stoi(msg->child_frame_id);
+    Eigen::Quaterniond q(msg->pose.pose.orientation.w,
+                    msg->pose.pose.orientation.x,
+                    msg->pose.pose.orientation.y,
+                    msg->pose.pose.orientation.z);
+    Eigen::Vector3d t(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
+
+    try{
+        _listener->lookupTransform("/global", "/drone_" + to_string(sequence),
+                                ros::Time(0), transform);
+
+        tf::Vector3 tf_t = transform.getOrigin();
+        tf::Quaternion tf_q = transform.getRotation();
+        
+        Eigen::Vector3d w_T_local = Eigen::Vector3d(tf_t.x(), tf_t.y(), tf_t.z());
+        geometry_msgs::Quaternion g_Q;
+        tf::quaternionTFToMsg(tf_q, g_Q);   
+        Eigen::Quaterniond w_Q_local(g_Q.w, g_Q.x, g_Q.y, g_Q.z);
+
+        q = w_Q_local * q;
+        t = w_Q_local * t + w_T_local;
     }
+    catch (tf::TransformException &ex) {
+        //ROS_WARN("no %d transform yet", sequence);
+    }
+
+    botCoor[0] = -t.x();
+    botCoor[1] = -t.y();
 }
 
 void Agent::imgCallback(const sensor_msgs::CompressedImage::ConstPtr& msg)

@@ -93,23 +93,24 @@ void DrawObstacle(const vector<float>& obsCoor, const vector<float>& botPos)
     glEnd();
 }
 
-void DrawPath(const list<vector<float>>& botPath, int idx)
+void DrawPath(const vector<vector<float>>& botPath, int idx)
 {
     // 配色方案：https://colordrop.io
-    const static vector<vector<float>> _pathColorLib = {{1.f, 0.635f, 0.f}, {0.f, 0.627f, 0.243f},
-                    {0.141f, 0.659f, 0.674f}, {0.f, 0.529f, 0.796f}};
-    if (botPath.empty()) {
+    const static vector<vector<float>> _pathColorLib = {{0.894f, 0.090f, 0.286f}, {1.f, 0.635f, 0.f},
+                    {0.0f, 0.627f, 0.243f}, {0.f, 0.529f, 0.796f}};
+    if (botPath.empty() || botPath.size() < 1) {
         return ;
     }
 
     glLineWidth(4);
     glBegin(GL_LINES);
     glColor3f(_pathColorLib[idx][0], _pathColorLib[idx][1], _pathColorLib[idx][2]);
-    vector<float> _prePoint = (*botPath.begin());
-    for(auto it = botPath.begin(); it != botPath.end(); ++it){
+
+    vector<float> _prePoint = botPath[0];
+    for( int i = 1; i < botPath.size(); ++i){
         glVertex3d(_prePoint[0], _prePoint[1], 0);
-        glVertex3d((*it)[0], (*it)[1], 0);
-        _prePoint = *it;
+        glVertex3d(botPath[i][0], botPath[i][1], 0);
+        _prePoint = botPath[i];
     }
     glEnd();
 }

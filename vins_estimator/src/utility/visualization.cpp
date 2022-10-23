@@ -502,7 +502,7 @@ void pubAgentFrame(agent_msg::AgentMsg &agent_frame_msg, const cv::Mat &image, c
     else
     {
         vector<cv::Point2f> tmp_pts;
-        cv::goodFeaturesToTrack(image, tmp_pts, 500, 0.01, 5);
+        cv::goodFeaturesToTrack(image, tmp_pts, 1000, 0.01, 5);
         for(int i = 0; i < (int)tmp_pts.size(); i++)
         {
             cv::KeyPoint key;

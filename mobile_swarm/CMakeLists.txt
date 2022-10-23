@@ -7,6 +7,7 @@ set(CMAKE_CXX_FLAGS_RELEASE  "-std=c++11 -O3 -fopenmp -pthread")
 
 # ros
 find_package(catkin REQUIRED COMPONENTS
+  tf
   roscpp
   serial
   nav_msgs

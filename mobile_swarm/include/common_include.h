@@ -18,10 +18,13 @@
 #include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <nav_msgs/Path.h>
+#include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/Point32.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <tf/transform_listener.h>
+#include <eigen3/Eigen/Dense>
 
 // for opencv
 #include <opencv2/core/core.hpp>
