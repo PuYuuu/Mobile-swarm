@@ -40,6 +40,7 @@
 
     <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
 		<param name="use_ibow" type="bool" value="false" />
+		<param name="use_mesh_maker" type="bool" value="false" />
         <param name="visualization_shift_x" type="int" value="0" />
         <param name="visualization_shift_y" type="int" value="0" />
         <param name="skip_cnt" type="int" value="0" />

@@ -31,6 +31,7 @@ double t_agent = 0;
 int VISUALIZATION_SHIFT_X;
 int VISUALIZATION_SHIFT_Y;
 bool USE_IBOW;
+bool USE_MESH_MAKER;
 
 std::string BRIEF_PATTERN_FILE;
 std::string POSE_GRAPH_SAVE_PATH;
@@ -44,6 +45,10 @@ std::string mesh_resource;
 visualization_msgs::Marker meshROS;
 tf::TransformListener* listener;
 
+ros::Subscriber sub_odom1;
+ros::Subscriber sub_odom2;
+ros::Subscriber sub_odom3;
+ros::Subscriber sub_odom4;
 
 void agent_callback(const agent_msg::AgentMsgConstPtr &agent_msg)
 {
@@ -294,6 +299,7 @@ int main(int argc, char **argv)
     n.getParam("skip_dis", SKIP_DIS);
     n.getParam("pose_graph_save_path", POSE_GRAPH_SAVE_PATH);
     n.getParam("use_ibow", USE_IBOW);
+    n.getParam("use_mesh_maker", USE_MESH_MAKER);
     n.param("mesh_resource", mesh_resource, std::string("package://pose_graph/meshes/hummingbird.mesh"));
     
     std::string pkg_path = ros::package::getPath("pose_graph");
@@ -315,12 +321,16 @@ int main(int argc, char **argv)
     loop_path_file_tmp.close();
 
     ros::Subscriber sub_agent_msg = n.subscribe("/agent_frame", 2000, agent_callback);
-    ros::Subscriber sub_odom1 = n.subscribe("/vins_1/vins_estimator/odometry",  100,  odom_callback);
-    ros::Subscriber sub_odom2 = n.subscribe("/vins_2/vins_estimator/odometry",  100,  odom_callback);
-    ros::Subscriber sub_odom3 = n.subscribe("/vins_3/vins_estimator/odometry",  100,  odom_callback);
-    ros::Subscriber sub_odom4 = n.subscribe("/vins_4/vins_estimator/odometry",  100,  odom_callback);
 
-    meshPub = n.advertise<visualization_msgs::Marker>("robot", 100, true); 
+    if (USE_MESH_MAKER) {
+        sub_odom1 = n.subscribe("/vins_1/vins_estimator/odometry",  100,  odom_callback);
+        sub_odom2 = n.subscribe("/vins_2/vins_estimator/odometry",  100,  odom_callback);
+        sub_odom3 = n.subscribe("/vins_3/vins_estimator/odometry",  100,  odom_callback);
+        sub_odom4 = n.subscribe("/vins_4/vins_estimator/odometry",  100,  odom_callback);
+        meshPub = n.advertise<visualization_msgs::Marker>("robot", 100, true); 
+    } else {
+        ROS_WARN("Do not use mesh maker for visualization.");
+    }
 
     std::thread agent_frame_thread;
     agent_frame_thread = std::thread(agent_process);
