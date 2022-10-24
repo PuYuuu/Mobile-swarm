@@ -49,7 +49,7 @@ string Agent::getAgentName(void)
     return _agentname;
 }
 
-const vector<vector<float>>& Agent::getLaserData(void)
+vector<vector<float>> Agent::getLaserData(void)
 {
     // 在unique_lock对象的声明周期内，它所管理的锁对象会一直保持上锁状态；
     // 而unique_lock的生命周期结束之后，它所管理的锁对象会被解锁
@@ -57,25 +57,25 @@ const vector<vector<float>>& Agent::getLaserData(void)
     return laserData;
 }
 
-const vector<float>& Agent::getObsCoor(void)
+vector<float> Agent::getObsCoor(void)
 {
     std::unique_lock<std::mutex> lock_(obsData_mutex_);
     return obsCoor;
 }
 
-const vector<float>& Agent::getBotCoor(void)
+vector<float> Agent::getBotCoor(void)
 {
     std::unique_lock<std::mutex> lock_(botData_mutex_);
     return botCoor;
 }
 
-const vector<vector<float>>& Agent::getBotPath(void)
+vector<vector<float>> Agent::getBotPath(void)
 {
     std::unique_lock<std::mutex> lock_(pathData_mutex_);
     return botPath;
 }
 
-const cv::Mat& Agent::getFeatureImg(void)
+cv::Mat Agent::getFeatureImg(void)
 {
     std::unique_lock<std::mutex> lock_(imgData_mutex_);
     return featureImg;

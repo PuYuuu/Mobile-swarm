@@ -13,11 +13,11 @@ public:
 
     // void registerSub(ros::NodeHandle& n);
     string getAgentName(void);
-    const vector<vector<float>>& getLaserData(void);
-    const vector<float>& getObsCoor(void);
-    const vector<float>& getBotCoor(void);
-    const vector<vector<float>>& getBotPath(void);
-    const cv::Mat& getFeatureImg(void);
+    vector<vector<float>> getLaserData(void);
+    vector<float> getObsCoor(void);
+    vector<float> getBotCoor(void);
+    vector<vector<float>> getBotPath(void);
+    cv::Mat getFeatureImg(void);
 
     // 订阅图像和点云话题占用大量带宽，故在不显示时关闭订阅，
     // 节省带宽，保证关键信息传输的实时性
