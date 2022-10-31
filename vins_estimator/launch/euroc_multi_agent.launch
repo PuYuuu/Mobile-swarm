@@ -3,38 +3,33 @@
     <arg name="sequence_2" default = "/media/puyu/Data/Datasets/Euroc/MH_02_easy.bag" />
     <arg name="sequence_3" default = "/media/puyu/Data/Datasets/Euroc/MH_03_medium.bag" />
  
-    <group ns="vins_1">
-    <param name="config_file" type="string" value="$(find feature_tracker)/../config/euroc/euroc_config.yaml" />
-    <param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+<group ns="vins_1">
+    <param name="config_file" type="string" value="$(find vins)/../config/euroc/euroc_mono_imu_config.yaml" />
     <param name="agent_num" type="int" value="1" />
-    <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-    <node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
+    <node name="vins_node" pkg="vins" type="vins_node" output="screen" />
     <node pkg="rosbag" type="play" name="player" output="log" 
-    args="$(arg sequence_1)  /imu0:=imu0 /cam0/image_raw:=cam0/image_raw" />
-    </group>
+        args="$(arg sequence_1) /imu0:=imu0 /cam0/image_raw:=cam0/image_raw -q" />
+</group>
 
-    <group ns="vins_2">
-    <param name="config_file" type="string" value="$(find feature_tracker)/../config/euroc/euroc_config.yaml" />
-    <param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+<group ns="vins_2">
+    <param name="config_file" type="string" value="$(find vins)/../config/euroc/euroc_mono_imu_config.yaml" />
     <param name="agent_num" type="int" value="2" />
-    <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-    <node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
+    <node name="vins_node" pkg="vins" type="vins_node" output="screen" />
     <node pkg="rosbag" type="play" name="player" output="log" 
-    args="$(arg sequence_2)  /imu0:=imu0 /cam0/image_raw:=cam0/image_raw" />
-    </group>
+        args="$(arg sequence_2) /imu0:=imu0 /cam0/image_raw:=cam0/image_raw -q" />
+</group>
 
-    <group ns="vins_3">
-    <param name="config_file" type="string" value="$(find feature_tracker)/../config/euroc/euroc_config.yaml" />
-    <param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+<group ns="vins_3">
+    <param name="config_file" type="string" value="$(find vins)/../config/euroc/euroc_mono_imu_config.yaml" />
     <param name="agent_num" type="int" value="3" />
-    <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-    <node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
+    <node name="vins_node" pkg="vins" type="vins_node" output="screen" />
     <node pkg="rosbag" type="play" name="player" output="log" 
-    args="$(arg sequence_3)  /imu0:=imu0 /cam0/image_raw:=cam0/image_raw" />
-    </group>
+        args="$(arg sequence_3) /imu0:=imu0 /cam0/image_raw:=cam0/image_raw -q" />
+</group>
 
     <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
-        <param name="use_ibow" type="bool" value="true" />
+        <param name="use_ibow" type="bool" value="false" />
+        <param name="use_mesh_maker" type="bool" value="true" />
         <param name="visualization_shift_x" type="int" value="0" />
         <param name="visualization_shift_y" type="int" value="0" />
         <param name="skip_cnt" type="int" value="0" />
@@ -43,6 +38,6 @@
         <param name="pose_graph_result_path" type="string" value="/home/puyu/output/mobile-swarm/" />
     </node>
 
-    <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins_estimator)/../config/multi_agent_rviz.rviz" />
+    <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins)/../config/multi_agent_rviz.rviz" />
 
 </launch>

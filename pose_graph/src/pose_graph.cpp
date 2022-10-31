@@ -627,7 +627,7 @@ void PoseGraph::optimize4DoF()
             m_keyframelist.unlock();
         }
 
-        std::chrono::milliseconds dura(5000);
+        std::chrono::milliseconds dura(2000);
         std::this_thread::sleep_for(dura);
     }
 }

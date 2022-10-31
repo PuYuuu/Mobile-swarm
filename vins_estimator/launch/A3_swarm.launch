@@ -5,36 +5,32 @@
 	<arg name="sequence_4" default = "/media/puyu/Data/Datasets/Co-Vins/4.bag" />
 	
 <group ns="vins_1">
-	<param name="config_file" type="string" value="$(find feature_tracker)/../config/A3/A3_config_local.yaml" />
-	<param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+	<param name="config_file" type="string" value="$(find vins)/../config/A3_Swarm/A3_config.yaml" />
 	<param name="agent_num" type="int" value="1" />
-	<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-	<node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
-	<node pkg="rosbag" type="play" name="player" output="log" args=" $(arg sequence_1) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 10 -r 0.5" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args=" $(arg sequence_1) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 10 -r 0.5" />
 </group>
 <group ns="vins_2">
-	<param name="config_file" type="string" value="$(find feature_tracker)/../config/A3/A3_config_local.yaml" />
-	<param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+	<param name="config_file" type="string" value="$(find vins)/../config/A3_Swarm/A3_config.yaml" />
 	<param name="agent_num" type="int" value="2" />
-	<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-	<node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
-	<node pkg="rosbag" type="play" name="player" output="log" args="$(arg sequence_2) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 8 -r 0.5" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args="$(arg sequence_2) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 8 -r 0.5" />
 </group>
 <group ns="vins_3">
-	<param name="config_file" type="string" value="$(find feature_tracker)/../config/A3/A3_config_local.yaml" />
-	<param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+	<param name="config_file" type="string" value="$(find vins)/../config/A3_Swarm/A3_config.yaml" />
 	<param name="agent_num" type="int" value="3" />
-	<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-	<node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
-	<node pkg="rosbag" type="play" name="player" output="log" args="$(arg sequence_3) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 5 -r 0.5" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args="$(arg sequence_3) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 5 -r 0.5" />
 </group>
 <group ns="vins_4">
-	<param name="config_file" type="string" value="$(find feature_tracker)/../config/A3/A3_config_local.yaml" />
-	<param name="vins_folder" type="string" value="$(find feature_tracker)/../config/../" />
+	<param name="config_file" type="string" value="$(find vins)/../config/A3_Swarm/A3_config.yaml" />
 	<param name="agent_num" type="int" value="4" />
-	<node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log"/>
-	<node name="vins_estimator" pkg="vins_estimator" type="vins_estimator" output="log"/>
-	<node pkg="rosbag" type="play" name="player" output="log" args="$(arg sequence_4) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 4 -r 0.5" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args="$(arg sequence_4) /dji_sdk_1/dji_sdk/imu:=dji_sdk_1/dji_sdk/imu /hcfox_1/image:=hcfox_1/image -s 4 -r 0.5" />
 </group>
 
 
@@ -49,6 +45,6 @@
         <param name="pose_graph_result_path" type="string" value="/home/tony-ws1/output/" />
     </node>
 
-    <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins_estimator)/../config/multi_agent_rviz.rviz" />
+    <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find vins)/../config/multi_agent_rviz.rviz" />
     
 </launch>

@@ -124,8 +124,8 @@ void Agent::pathCallback(const nav_msgs::Path::ConstPtr& msg)
     
     botPath.clear();
     for (int i = 0; i < msg->poses.size(); ++i) {
-        _poseTmp[0] = -msg->poses[i].pose.position.x;
-        _poseTmp[1] = -msg->poses[i].pose.position.y;
+        _poseTmp[0] = msg->poses[i].pose.position.x;
+        _poseTmp[1] = msg->poses[i].pose.position.y;
         botPath.emplace_back(_poseTmp); 
     }
 }
@@ -161,8 +161,8 @@ void Agent::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         //ROS_WARN("no %d transform yet", sequence);
     }
 
-    botCoor[0] = -t.x();
-    botCoor[1] = -t.y();
+    botCoor[0] = t.x();
+    botCoor[1] = t.y();
 }
 
 void Agent::imgCallback(const sensor_msgs::CompressedImage::ConstPtr& msg)

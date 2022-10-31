@@ -1,0 +1,42 @@
+<launch>
+	<arg name="sequence_1" default = "/media/puyu/Data/Datasets/Co-Vins/1-two-circle.bag" />
+	<arg name="sequence_2" default = "/media/puyu/Data/Datasets/Co-Vins/1-two-eight.bag" />
+	<arg name="sequence_3" default = "/media/puyu/Data/Datasets/Co-Vins/1-two-odd.bag" />
+
+
+<group ns="vins_1">
+	<param name="agent_num" type="int" value="1" />
+	<param name="config_file" type="string" value="$(find vins)/../config/realsense_d435i/realsense_stereo_imu_config.yaml" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args=" $(arg sequence_1) /camera/infra1/image_rect_raw:=camera/infra1/image_rect_raw /camera/infra2/image_rect_raw:=camera/infra2/image_rect_raw /camera/imu:=camera/imu -q" />
+</group>
+
+<group ns="vins_2">
+	<param name="agent_num" type="int" value="2" />
+	<param name="config_file" type="string" value="$(find vins)/../config/realsense_d435i/realsense_stereo_imu_config.yaml" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args=" $(arg sequence_2) /camera/infra1/image_rect_raw:=camera/infra1/image_rect_raw /camera/infra2/image_rect_raw:=camera/infra2/image_rect_raw /camera/imu:=camera/imu -q" />
+</group>
+
+<group ns="vins_3">
+	<param name="agent_num" type="int" value="3" />
+	<param name="config_file" type="string" value="$(find vins)/../config/realsense_d435i/realsense_stereo_imu_config.yaml" />
+	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
+	<node pkg="rosbag" type="play" name="player" output="log" 
+		args=" $(arg sequence_3) /camera/infra1/image_rect_raw:=camera/infra1/image_rect_raw /camera/infra2/image_rect_raw:=camera/infra2/image_rect_raw /camera/imu:=camera/imu -q" />
+</group>
+
+    <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
+		<param name="use_ibow" type="bool" value="false" />
+		<param name="use_mesh_maker" type="bool" value="false" />
+        <param name="visualization_shift_x" type="int" value="0" />
+        <param name="visualization_shift_y" type="int" value="0" />
+        <param name="skip_cnt" type="int" value="0" />
+        <param name="skip_dis" type="double" value="0" />
+    </node>
+
+	<!-- <node name="mobile_swarm" pkg="mobile_swarm" type="mobile_swarm" output="screen" /> -->
+    
+</launch>

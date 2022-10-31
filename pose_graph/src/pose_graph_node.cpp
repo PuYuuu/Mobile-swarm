@@ -79,7 +79,7 @@ void agent_process()
         {
             // build keyframe
             TicToc t_addframe;
-            double time_stamp = agent_msg->header.stamp.toSec();
+            double time_stamp = agent_msg->header;
             int sequence = agent_msg->seq;
             Vector3d T = Vector3d(agent_msg->position_imu.x,
                                   agent_msg->position_imu.y,

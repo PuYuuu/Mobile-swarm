@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(vins_estimator)
+project(vins)
 
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "-std=c++11")
@@ -13,14 +13,13 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     tf
     cv_bridge
-    camera_model
-    roslib
+    camera_models
     agent_msg
-    )
+    image_transport)
 
 find_package(OpenCV REQUIRED)
 
-message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
+# message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
 
 find_package(Ceres REQUIRED)
 
@@ -35,14 +34,14 @@ include_directories(
 
 catkin_package()
 
-add_executable(vins_estimator
-    src/estimator_node.cpp
-    src/parameters.cpp
-    src/estimator.cpp
-    src/feature_manager.cpp
+add_library(vins_lib
+    src/estimator/parameters.cpp
+    src/estimator/estimator.cpp
+    src/estimator/feature_manager.cpp
     src/factor/pose_local_parameterization.cpp
-    src/factor/projection_factor.cpp
-    src/factor/projection_td_factor.cpp
+    src/factor/projectionTwoFrameOneCamFactor.cpp
+    src/factor/projectionTwoFrameTwoCamFactor.cpp
+    src/factor/projectionOneFrameTwoCamFactor.cpp
     src/factor/marginalization_factor.cpp
     src/utility/utility.cpp
     src/utility/visualization.cpp
@@ -54,9 +53,10 @@ add_executable(vins_estimator
     src/ThirdParty/DUtils/Random.cpp
     src/ThirdParty/DUtils/Timestamp.cpp
     src/ThirdParty/DVision/BRIEF.cpp
-    )
+    src/featureTracker/feature_tracker.cpp)
+target_link_libraries(vins_lib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
 
-target_link_libraries(vins_estimator ${catkin_LIBRARIES} ${OpenCV_LIBS} ${CERES_LIBRARIES}) 
-
+add_executable(vins_node src/estimator_node.cpp)
+target_link_libraries(vins_node vins_lib) 
 

@@ -95,7 +95,7 @@ Visualization Manager:
       Value: false
     - Class: rviz/Image
       Enabled: false
-      Image Topic: /agent0/feature_tracker/feature_img
+      Image Topic: /agent0/vins_estimator/image_track
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -646,7 +646,7 @@ Visualization Manager:
       Name: pose_graph
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /vins_1/feature_tracker/feature_img
+      Image Topic: /vins_1/vins_estimator/image_track
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -658,7 +658,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /vins_2/feature_tracker/feature_img
+      Image Topic: /vins_2/vins_estimator/image_track
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -670,7 +670,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /vins_3/feature_tracker/feature_img
+      Image Topic: /vins_3/vins_estimator/image_track
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -682,7 +682,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /vins_4/feature_tracker/feature_img
+      Image Topic: /vins_4/vins_estimator/image_track
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -694,7 +694,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: false
-      Image Topic: /vins_5/feature_tracker/feature_img
+      Image Topic: /vins_5/vins_estimator/image_track
       Max Value: 1
       Median window: 5
       Min Value: 0

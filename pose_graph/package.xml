@@ -40,8 +40,8 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>camera_model</build_depend>
-  <run_depend>camera_model</run_depend>
+  <build_depend>camera_models</build_depend>
+  <run_depend>camera_models</run_depend>
 
 
 

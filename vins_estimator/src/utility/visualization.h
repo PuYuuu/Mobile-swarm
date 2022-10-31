@@ -1,3 +1,12 @@
+/*******************************************************
+ * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
+ * 
+ * This file is part of VINS.
+ * 
+ * Licensed under the GNU General Public License v3.0;
+ * you may not use this file except in compliance with the License.
+ *******************************************************/
+
 #pragma once
 
 #include <ros/ros.h>
@@ -8,6 +17,7 @@
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
+#include <cv_bridge/cv_bridge.h>
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PointStamped.h>
@@ -15,25 +25,12 @@
 #include <tf/transform_broadcaster.h>
 #include "CameraPoseVisualization.h"
 #include <eigen3/Eigen/Dense>
-#include "../estimator.h"
-#include "../parameters.h"
+#include "../estimator/estimator.h"
+#include "../estimator/parameters.h"
 #include <fstream>
 #include <agent_msg/AgentMsg.h>
 #include "../ThirdParty/DUtils/DUtils.h"
 #include "../ThirdParty/DVision/DVision.h"
-#include "camodocal/camera_models/CameraFactory.h"
-#include "camodocal/camera_models/CataCamera.h"
-#include "camodocal/camera_models/PinholeCamera.h"
-
-using namespace DVision;
-class BriefExtractor
-{
-public:
-  virtual void operator()(const cv::Mat &im, vector<cv::KeyPoint> &keys, vector<BRIEF::bitset> &descriptors) const;
-  BriefExtractor(const std::string &pattern_file);
-
-  DVision::BRIEF m_brief;
-};
 
 extern ros::Publisher pub_odometry;
 extern ros::Publisher pub_path, pub_pose;
@@ -45,9 +42,21 @@ extern nav_msgs::Path path;
 extern ros::Publisher pub_pose_graph;
 extern int IMAGE_ROW, IMAGE_COL;
 
+using namespace DVision;
+class BriefExtractor
+{
+public:
+    virtual void operator()(const cv::Mat &im, vector<cv::KeyPoint> &keys, vector<BRIEF::bitset> &descriptors) const;
+    BriefExtractor(const std::string &pattern_file);
+
+    DVision::BRIEF m_brief;
+};
+
 void registerPub(ros::NodeHandle &n);
 
-void pubLatestOdometry(const Eigen::Vector3d &P, const Eigen::Quaterniond &Q, const Eigen::Vector3d &V, const std_msgs::Header &header);
+void pubLatestOdometry(const Eigen::Vector3d &P, const Eigen::Quaterniond &Q, const Eigen::Vector3d &V, double t);
+
+void pubTrackImage(const cv::Mat &imgTrack, const double t);
 
 void printStatistics(const Estimator &estimator, double t);
 
@@ -66,6 +75,8 @@ void pubTF(const Estimator &estimator, const std_msgs::Header &header);
 void pubKeyframe(const Estimator &estimator);
 
 void pubRelocalization(const Estimator &estimator);
+
+void pubCar(const Estimator & estimator, const std_msgs::Header &header);
 
 void preprocessAgentFrame(const Estimator &estimator, agent_msg::AgentMsg &agent_frame_msg);
 

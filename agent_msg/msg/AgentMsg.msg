@@ -1,4 +1,4 @@
-Header header
+float64 header
 int16 seq
 geometry_msgs/Point position_imu
 geometry_msgs/Quaternion orientation_imu

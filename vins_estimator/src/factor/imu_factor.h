@@ -1,10 +1,19 @@
+/*******************************************************
+ * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
+ * 
+ * This file is part of VINS.
+ * 
+ * Licensed under the GNU General Public License v3.0;
+ * you may not use this file except in compliance with the License.
+ *******************************************************/
+
 #pragma once
 #include <ros/assert.h>
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 
 #include "../utility/utility.h"
-#include "../parameters.h"
+#include "../estimator/parameters.h"
 #include "integration_base.h"
 
 #include <ceres/ceres.h>
@@ -120,8 +129,9 @@ class IMUFactor : public ceres::SizedCostFunction<15, 7, 9, 7, 9>
 #if 0
             jacobian_speedbias_i.block<3, 3>(O_R, O_BG - O_V) = -dq_dbg;
 #else
-                Eigen::Quaterniond corrected_delta_q = pre_integration->delta_q * Utility::deltaQ(dq_dbg * (Bgi - pre_integration->linearized_bg));
-                jacobian_speedbias_i.block<3, 3>(O_R, O_BG - O_V) = -Utility::Qleft(Qj.inverse() * Qi * corrected_delta_q).bottomRightCorner<3, 3>() * dq_dbg;
+                //Eigen::Quaterniond corrected_delta_q = pre_integration->delta_q * Utility::deltaQ(dq_dbg * (Bgi - pre_integration->linearized_bg));
+                //jacobian_speedbias_i.block<3, 3>(O_R, O_BG - O_V) = -Utility::Qleft(Qj.inverse() * Qi * corrected_delta_q).bottomRightCorner<3, 3>() * dq_dbg;
+                jacobian_speedbias_i.block<3, 3>(O_R, O_BG - O_V) = -Utility::Qleft(Qj.inverse() * Qi * pre_integration->delta_q).bottomRightCorner<3, 3>() * dq_dbg;
 #endif
 
                 jacobian_speedbias_i.block<3, 3>(O_V, O_V - O_V) = -Qi.inverse().toRotationMatrix();
