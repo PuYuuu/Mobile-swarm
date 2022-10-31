@@ -228,6 +228,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "vins_node");
     ros::NodeHandle n;
+    image_transport::ImageTransport it(n);
     ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
 
     string config_file;
@@ -243,7 +244,7 @@ int main(int argc, char **argv)
 
     ROS_WARN("waiting for image and imu...");
 
-    registerPub(n);
+    registerPub(n, it);
 
     ros::Subscriber sub_imu;
     if(USE_IMU)

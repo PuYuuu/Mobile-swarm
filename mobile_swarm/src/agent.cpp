@@ -12,7 +12,7 @@ Agent::Agent(string ns, ros::NodeHandle* n)
     _subPathStr = "/pose_graph/" + subTopicPair[ns];
     _subLaserStr = "/" + ns + "/scan";
     _subObsStr = "/" + ns + "/obs_coor";
-    _subImgStr = "/" + ns + "/feature_tracker/feature_img/compressed";
+    _subImgStr = "/" + ns + "/vins_estimator/image_track/compressed";
     _subOdomStr = "/" + ns + "/vins_estimator/odometry";
 
     ROS_INFO_STREAM("\r\n\tAgent:" << ns 

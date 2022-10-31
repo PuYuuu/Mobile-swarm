@@ -31,6 +31,7 @@
 #include <agent_msg/AgentMsg.h>
 #include "../ThirdParty/DUtils/DUtils.h"
 #include "../ThirdParty/DVision/DVision.h"
+#include <image_transport/image_transport.h>
 
 extern ros::Publisher pub_odometry;
 extern ros::Publisher pub_path, pub_pose;
@@ -52,11 +53,11 @@ public:
     DVision::BRIEF m_brief;
 };
 
-void registerPub(ros::NodeHandle &n);
+void registerPub(ros::NodeHandle &n, image_transport::ImageTransport& it);
 
 void pubLatestOdometry(const Eigen::Vector3d &P, const Eigen::Quaterniond &Q, const Eigen::Vector3d &V, double t);
 
-void pubTrackImage(const cv::Mat &imgTrack, const double t);
+void pubTrackImage(cv::Mat &imgTrack, const double t);
 
 void printStatistics(const Estimator &estimator, double t);
 
