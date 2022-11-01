@@ -1,7 +1,7 @@
 <launch>
-	<arg name="sequence_1" default = "/media/puyu/Data/Datasets/Co-Vins/1-two-circle.bag" />
-	<arg name="sequence_2" default = "/media/puyu/Data/Datasets/Co-Vins/1-two-eight.bag" />
-	<arg name="sequence_3" default = "/media/puyu/Data/Datasets/Co-Vins/1-two-odd.bag" />
+	<arg name="sequence_1" default = "/media/puyu/Data/Datasets/Co-Vins/nov-circle-three.bag" />
+	<arg name="sequence_2" default = "/media/puyu/Data/Datasets/Co-Vins/nov-eight-two.bag" />
+	<arg name="sequence_3" default = "/media/puyu/Data/Datasets/Co-Vins/nov-odd-two.bag" />
 
 
 <group ns="vins_1">
@@ -9,7 +9,7 @@
 	<param name="config_file" type="string" value="$(find vins)/../config/realsense_d435i/realsense_stereo_imu_config.yaml" />
 	<node name="vins_node" pkg="vins" type="vins_node" output="screen" />
 	<node pkg="rosbag" type="play" name="player" output="log" 
-		args=" $(arg sequence_1) /camera/infra1/image_rect_raw:=camera/infra1/image_rect_raw /camera/infra2/image_rect_raw:=camera/infra2/image_rect_raw /camera/imu:=camera/imu -q" />
+		args=" $(arg sequence_1) /camera/infra1/image_rect_raw:=camera/infra1/image_rect_raw /camera/infra2/image_rect_raw:=camera/infra2/image_rect_raw /camera/imu:=camera/imu -q --duration 147" />
 </group>
 
 <group ns="vins_2">
@@ -37,6 +37,6 @@
         <param name="skip_dis" type="double" value="0" />
     </node>
 
-	<!-- <node name="mobile_swarm" pkg="mobile_swarm" type="mobile_swarm" output="screen" /> -->
+	<node name="mobile_swarm" pkg="mobile_swarm" type="mobile_swarm" output="screen" />
     
 </launch>

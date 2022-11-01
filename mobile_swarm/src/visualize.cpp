@@ -26,18 +26,18 @@ void DrawGrid(int gridlines = 15, float linewidth = 2.0)
     glEnd();
 
     /* */
-    glLineWidth(5.0);
-    glBegin(GL_LINES);
-    glColor3f(1.0, 0.0, 0.0);
-    glVertex3d(0, 0, 0);
-    glVertex3d(0, 3, 0);
-    glVertex3d(0, 3, 0);
-    glVertex3d(3, 3, 0);
-    glVertex3d(3, 3, 0);
-    glVertex3d(3, 0, 0);
-    glVertex3d(3, 0, 0);
-    glVertex3d(0, 0, 0);
-    glEnd();
+    // glLineWidth(5.0);
+    // glBegin(GL_LINES);
+    // glColor3f(1.0, 0.0, 0.0);
+    // glVertex3d(0, 0, 0);
+    // glVertex3d(0, 3, 0);
+    // glVertex3d(0, 3, 0);
+    // glVertex3d(3, 3, 0);
+    // glVertex3d(3, 3, 0);
+    // glVertex3d(3, 0, 0);
+    // glVertex3d(3, 0, 0);
+    // glVertex3d(0, 0, 0);
+    // glEnd();
     /* */
 }
 
