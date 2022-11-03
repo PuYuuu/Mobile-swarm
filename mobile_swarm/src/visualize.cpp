@@ -117,11 +117,30 @@ void DrawPath(const vector<vector<float>>& botPath, int idx)
 
 void DrawTargetPos(double pos[])
 {
-    glPointSize(25.0);
-    glBegin( GL_POINTS );       
-    glColor3f(1.0,0.0,0.0);
-    glVertex3f(pos[0], pos[1], 0);
-    glEnd();
+    static const double _dta = 1.256637;
+    double R = 0.25, r = 0.10;
+    double x = pos[0], y = pos[1];
+    double a = 0, b = R;
+    double c = -0.59 * r, d = 0.81 * r;
+
+    glColor3f(1.0f,0.0f,0.0f);
+    for (int i = 0; i < 5; ++i) {
+        glBegin(GL_TRIANGLES);
+        glVertex2f(x, y);
+        glVertex2f(x+a*cos(_dta*i)-b*sin(_dta*i), y+a*sin(_dta*i)+b*cos(_dta*i));   
+        glVertex2f(x+c*cos(_dta*i)-d*sin(_dta*i), y+c*sin(_dta*i)+d*cos(_dta*i));
+        glEnd();
+    }
+
+    c = -c;
+    glColor3f(0.0f,1.0f,1.0f);
+    for (int i = 0; i < 5; ++i) {
+        glBegin(GL_TRIANGLES);
+        glVertex2f(x, y);
+        glVertex2f(x+a*cos(_dta*i)-b*sin(_dta*i), y+a*sin(_dta*i)+b*cos(_dta*i));   
+        glVertex2f(x+c*cos(_dta*i)-d*sin(_dta*i), y+c*sin(_dta*i)+d*cos(_dta*i));
+        glEnd();
+    }
 }
 
 void UploadImg(cv::Mat& img, pangolin::View& upview, pangolin::GlTexture& uptext, cv::Size upsize)

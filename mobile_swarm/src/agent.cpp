@@ -15,12 +15,12 @@ Agent::Agent(string ns, ros::NodeHandle* n)
     _subImgStr = "/" + ns + "/vins_estimator/image_track/compressed";
     _subOdomStr = "/" + ns + "/vins_estimator/odometry";
 
-    ROS_INFO_STREAM("\r\n\tAgent:" << ns 
-        << "\r\n\tPath Topicname: \"" << _subPathStr
-        << "\"\r\n\tLaser Topicname: \"" << _subLaserStr
-        << "\"\r\n\tObstacle Topicname: \"" << _subObsStr
-        << "\"\r\n\tFeatureImg Topicname:\"" << _subImgStr
-        << "\"\r\n");
+    // ROS_INFO_STREAM("\r\n\tAgent:" << ns 
+    //     << "\r\n\tPath Topicname: \"" << _subPathStr
+    //     << "\"\r\n\tLaser Topicname: \"" << _subLaserStr
+    //     << "\"\r\n\tObstacle Topicname: \"" << _subObsStr
+    //     << "\"\r\n\tFeatureImg Topicname:\"" << _subImgStr
+    //     << "\"\r\n");
 
     // 保持订阅路径和障碍物话题
     _subOdom = (*_n).subscribe(_subOdomStr, 1000, &Agent::odomCallback, this);

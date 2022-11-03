@@ -68,8 +68,8 @@ void path1Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
     double _pos_x = 0.0, _pos_y = 0.0;
     tfTransfer(msg, _pos_x, _pos_y);
-    int _converted_x = (int)(_pos_x * -1000);
-    int _converted_y = (int)(_pos_y * -1000);
+    int _converted_x = (int)(_pos_x * 1000);
+    int _converted_y = (int)(_pos_y * 1000);
 
     bufferConvert(sendBuffer, _pos_x, _pos_y);
 }
@@ -78,8 +78,8 @@ void path2Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
     double _pos_x = 0.0, _pos_y = 0.0;
     tfTransfer(msg, _pos_x, _pos_y);
-    int _converted_x = (int)(_pos_x * -1000);
-    int _converted_y = (int)(_pos_y * -1000);
+    int _converted_x = (int)(_pos_x * 1000);
+    int _converted_y = (int)(_pos_y * 1000);
 
     bufferConvert(sendBuffer + 6, _pos_x, _pos_y);
 }
@@ -88,8 +88,8 @@ void path3Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
     double _pos_x = 0.0, _pos_y = 0.0;
     tfTransfer(msg, _pos_x, _pos_y);
-    int _converted_x = (int)(_pos_x * -1000);
-    int _converted_y = (int)(_pos_y * -1000);
+    int _converted_x = (int)(_pos_x * 1000);
+    int _converted_y = (int)(_pos_y * 1000);
     
     bufferConvert(sendBuffer + 12, _pos_x, _pos_y);
 }
@@ -98,8 +98,8 @@ void obstCallback(const geometry_msgs::Point32::ConstPtr& msg)
 {
     geometry_msgs::Point32 _obstaction = *msg; 
     // 障碍物坐标系和里程计坐标系相差90度
-    int _obs_x = -1 * (int)(_obstaction.y * 1000.0);
-    int _obs_y = (int)(_obstaction.x * 1000.0);
+    int _obs_x = (int)(_obstaction.x * 1000.0);
+    int _obs_y = (int)(_obstaction.y * 1000.0);
     
     bufferConvert(sendBuffer + 18, _obs_x, _obs_y);
 }
