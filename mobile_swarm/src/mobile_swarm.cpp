@@ -188,6 +188,10 @@ void MainShow(ros::NodeHandle* n)
             }
         }
 
+        if (showTargetPos) {
+            DrawTargetPos(tar_pos);
+        }
+
         if (_showCameraView) {
             if (_curViewPort == 0) {
                 (*agents[0]).startSubImg();
@@ -226,10 +230,6 @@ void MainShow(ros::NodeHandle* n)
             _showFeatureImg_1.show = false;
             _showFeatureImg_2.show = false;
             _showFeatureImg_3.show = false;
-        }
-
-        if (showTargetPos) {
-            DrawTargetPos(tar_pos);
         }
 
         pangolin::FinishFrame();
