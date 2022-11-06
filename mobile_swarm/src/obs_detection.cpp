@@ -38,7 +38,7 @@ const vector<vector<float>> colorLib = {{0.863,0.078,0.235}, {0.000,0.000,0.804}
 ros::Publisher obs_coor_pub;
 geometry_msgs::Point32 obs;
 float thresholdGain = 0.25;
-int slideWindowSize = 5;
+int slideWindowSize = 7;
 
 vector<laserPoint> laserData_Origin;
 vector<laserPoint> laserData_Filter;
@@ -74,7 +74,7 @@ void laserScancallback(const sensor_msgs::LaserScan::ConstPtr& scan)
     vector<float> _varietyTmp(2, 0);
     int _curVarietyIndex = 0;
     int _curVarietyNumber = 1;
-    float _curPonitAngle = scan->angle_min;
+    float _curPonitAngle = scan->angle_min + M_PI_2;
     float _angle_increment = scan->angle_increment;
     
     laserData_Origin.clear();
@@ -117,6 +117,10 @@ void laserScancallback(const sensor_msgs::LaserScan::ConstPtr& scan)
             // 不同类点
             _clusterVarietyCenter[_curVarietyIndex][0] /= _curVarietyNumber;
             _clusterVarietyCenter[_curVarietyIndex][1] /= _curVarietyNumber;
+            if (_curVarietyNumber < 4) {
+                _clusterVarietyCenter[_curVarietyIndex][0] = 12;
+                _clusterVarietyCenter[_curVarietyIndex][1] = 12;
+            } 
             _curVarietyNumber = 1;
 
             if (i < _dataFilter_Size) {
@@ -215,7 +219,7 @@ void laserShow()
     pangolin::Var<bool> c_button("ui.laserData_Cluste", false, false);  // 设置一个按钮
     pangolin::Var<bool> d_button("ui.resetCameraView", false, false);
     pangolin::Var<int> a_int_slider("ui.thresholdGain", 10, 1, 50);     // 设置一个slider
-    pangolin::Var<int> b_int_slider("ui.slideWindow", 5, 1, 15);        // 设置一个slider
+    pangolin::Var<int> b_int_slider("ui.slideWindow", 7, 1, 15);        // 设置一个slider
     pangolin::Var<bool> a_checkBox("ui.showObstacle", false, true);     // 设置一个按钮
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 

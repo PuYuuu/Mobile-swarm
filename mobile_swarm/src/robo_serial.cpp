@@ -71,7 +71,7 @@ void path1Callback(const nav_msgs::Odometry::ConstPtr& msg)
     int _converted_x = (int)(_pos_x * 1000);
     int _converted_y = (int)(_pos_y * 1000);
 
-    bufferConvert(sendBuffer, _pos_x, _pos_y);
+    bufferConvert(sendBuffer, _converted_x, _converted_y);
 }
 
 void path2Callback(const nav_msgs::Odometry::ConstPtr& msg)
@@ -81,7 +81,7 @@ void path2Callback(const nav_msgs::Odometry::ConstPtr& msg)
     int _converted_x = (int)(_pos_x * 1000);
     int _converted_y = (int)(_pos_y * 1000);
 
-    bufferConvert(sendBuffer + 6, _pos_x, _pos_y);
+    bufferConvert(sendBuffer + 6, _converted_x, _converted_y);
 }
 
 void path3Callback(const nav_msgs::Odometry::ConstPtr& msg)
@@ -91,7 +91,7 @@ void path3Callback(const nav_msgs::Odometry::ConstPtr& msg)
     int _converted_x = (int)(_pos_x * 1000);
     int _converted_y = (int)(_pos_y * 1000);
     
-    bufferConvert(sendBuffer + 12, _pos_x, _pos_y);
+    bufferConvert(sendBuffer + 12, _converted_x, _converted_y);
 }
 
 void obstCallback(const geometry_msgs::Point32::ConstPtr& msg)
@@ -117,13 +117,13 @@ void debugInfoPrint(void)
     int _coor_x, _coor_y;
     int _obs_x, _obs_y;
 
-    _coor_x = sendBuffer[13] * 256 + sendBuffer[14];
-    _coor_y = sendBuffer[16] * 256 + sendBuffer[17];
+    _coor_x = sendBuffer[1] * 256 + sendBuffer[2];
+    _coor_y = sendBuffer[4] * 256 + sendBuffer[5];
     _obs_x = sendBuffer[19] * 256 + sendBuffer[20];
     _obs_y = sendBuffer[22] * 256 + sendBuffer[23];
 
-    _coor_x = ((sendBuffer[12] == 0x01) ? -_coor_x : _coor_x);
-    _coor_y = ((sendBuffer[15] == 0x01) ? -_coor_y : _coor_y);
+    _coor_x = ((sendBuffer[0] == 0x01) ? -_coor_x : _coor_x);
+    _coor_y = ((sendBuffer[3] == 0x01) ? -_coor_y : _coor_y);
     _obs_x = ((sendBuffer[18]  == 0x01) ? -_obs_x : _obs_x);
     _obs_y = ((sendBuffer[21] == 0x01) ? -_obs_y : _obs_y);
     ROS_INFO("x : %d, y : %d, obs_x : %d, obs_y : %d", _coor_x,
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
     serial::Serial sp;                  // 创建一个serial类
     serial::Timeout to = serial::Timeout::simpleTimeout(30);   // 创建timeout
     sp.setPort("/dev/stm32board");      // 设置要打开的串口名称
-    sp.setBaudrate(115200);             // 设置串口通信的波特率
+    sp.setBaudrate(9600);               // 设置串口通信的波特率
     sp.setTimeout(to);                  // 串口设置timeout
  
     try {
@@ -190,4 +190,3 @@ int main(int argc, char** argv)
  
     return 0;
 }
-
