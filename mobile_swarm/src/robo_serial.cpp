@@ -16,10 +16,10 @@ using Eigen::Vector3d;
 using Eigen::Quaterniond;
 
 // 全局变量
-uint8_t sendBuffer[32];
+uint8_t sendBuffer[37];
 tf::TransformListener* tfListener;
 
-static void bufferConvert(uint8_t* buffer, int data0, int data1)
+static void bufferConvert(uint8_t* buffer, int data0, int data1, double data2)
 {
     uint16_t _x_abs = abs(data0);
     uint16_t _y_abs = abs(data1);
@@ -30,9 +30,17 @@ static void bufferConvert(uint8_t* buffer, int data0, int data1)
     buffer[3] = ((data1 < 0) ? 0x01 : 0x00);
     buffer[4] = _y_abs / 256;       // y坐标高8位
     buffer[5] = _y_abs % 256;       // y坐标低8位
+    
+    int _yaw_angle = static_cast<int>(round(data2));
+    if (_yaw_angle > 180) {
+        _yaw_angle = 180;
+    } else if (_yaw_angle < 0) {
+        _yaw_angle = 0;
+    } 
+    buffer[6] = _yaw_angle;              // yaw
 }
 
-static void tfTransfer(const nav_msgs::Odometry::ConstPtr& msg, double& outputX, double& outputY)
+static void tfTransfer(const nav_msgs::Odometry::ConstPtr& msg, double& outputX, double& outputY, double& outputZ)
 {
     tf::StampedTransform transform;
     int sequence = std::stoi(msg->child_frame_id);
@@ -62,36 +70,39 @@ static void tfTransfer(const nav_msgs::Odometry::ConstPtr& msg, double& outputX,
     }
     outputX = t.x();
     outputY = t.y();
+    double siny_cosp = 2 * (q.w() * q.z()+ q.x() * q.y());
+    double cosy_cosp = 1 - 2 * (q.y() * q.y() + q.z() * q.z());
+    outputZ = std::atan2(siny_cosp, cosy_cosp) * 180 / M_PI + 90.0;
 }
 
 void path1Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    double _pos_x = 0.0, _pos_y = 0.0;
-    tfTransfer(msg, _pos_x, _pos_y);
+    double _pos_x = 0.0, _pos_y = 0.0, _yaw = 90.0;
+    tfTransfer(msg, _pos_x, _pos_y, _yaw);
     int _converted_x = (int)(_pos_x * 1000);
     int _converted_y = (int)(_pos_y * 1000);
 
-    bufferConvert(sendBuffer, _converted_x, _converted_y);
+    bufferConvert(sendBuffer, _converted_x, _converted_y, _yaw);
 }
 
 void path2Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    double _pos_x = 0.0, _pos_y = 0.0;
-    tfTransfer(msg, _pos_x, _pos_y);
+    double _pos_x = 0.0, _pos_y = 0.0, _yaw = 90.0;
+    tfTransfer(msg, _pos_x, _pos_y, _yaw);
     int _converted_x = (int)(_pos_x * 1000);
     int _converted_y = (int)(_pos_y * 1000);
 
-    bufferConvert(sendBuffer + 6, _converted_x, _converted_y);
+    bufferConvert(sendBuffer + 7, _converted_x, _converted_y, _yaw);
 }
 
 void path3Callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    double _pos_x = 0.0, _pos_y = 0.0;
-    tfTransfer(msg, _pos_x, _pos_y);
+    double _pos_x = 0.0, _pos_y = 0.0, _yaw = 90.0;
+    tfTransfer(msg, _pos_x, _pos_y, _yaw);
     int _converted_x = (int)(_pos_x * 1000);
     int _converted_y = (int)(_pos_y * 1000);
     
-    bufferConvert(sendBuffer + 12, _converted_x, _converted_y);
+    bufferConvert(sendBuffer + 14, _converted_x, _converted_y, _yaw);
 }
 
 void obstCallback(const geometry_msgs::Point32::ConstPtr& msg)
@@ -101,7 +112,7 @@ void obstCallback(const geometry_msgs::Point32::ConstPtr& msg)
     int _obs_x = (int)(_obstaction.x * 1000.0);
     int _obs_y = (int)(_obstaction.y * 1000.0);
     
-    bufferConvert(sendBuffer + 18, _obs_x, _obs_y);
+    bufferConvert(sendBuffer + 21, _obs_x, _obs_y, 0);
 }
 
 void goalCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -110,24 +121,25 @@ void goalCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
     int _pos_x = (int)(_goal.data[0] * 1000);
     int _pos_y = (int)(_goal.data[1] * 1000);
 
-    bufferConvert(sendBuffer + 24, _pos_x, _pos_y);
+    bufferConvert(sendBuffer + 28, _pos_x, _pos_y, 0);
 }
 void debugInfoPrint(void)
 {
-    int _coor_x, _coor_y;
+    int _coor_x, _coor_y, _coor_z;
     int _obs_x, _obs_y;
 
     _coor_x = sendBuffer[1] * 256 + sendBuffer[2];
     _coor_y = sendBuffer[4] * 256 + sendBuffer[5];
-    _obs_x = sendBuffer[19] * 256 + sendBuffer[20];
-    _obs_y = sendBuffer[22] * 256 + sendBuffer[23];
+    _coor_z = sendBuffer[6];
+    _obs_x = sendBuffer[22] * 256 + sendBuffer[23];
+    _obs_y = sendBuffer[25] * 256 + sendBuffer[26];
 
     _coor_x = ((sendBuffer[0] == 0x01) ? -_coor_x : _coor_x);
     _coor_y = ((sendBuffer[3] == 0x01) ? -_coor_y : _coor_y);
-    _obs_x = ((sendBuffer[18]  == 0x01) ? -_obs_x : _obs_x);
-    _obs_y = ((sendBuffer[21] == 0x01) ? -_obs_y : _obs_y);
-    ROS_INFO("x : %d, y : %d, obs_x : %d, obs_y : %d", _coor_x,
-        _coor_y, _obs_x, _obs_y);
+    _obs_x = ((sendBuffer[21]  == 0x01) ? -_obs_x : _obs_x);
+    _obs_y = ((sendBuffer[24] == 0x01) ? -_obs_y : _obs_y);
+    ROS_INFO("x : %d, y : %d, yaw : %d, obs_x : %d, obs_y : %d", _coor_x,
+        _coor_y, _coor_z, _obs_x, _obs_y);
 }
 
 int main(int argc, char** argv)
@@ -159,8 +171,8 @@ int main(int argc, char** argv)
     } else {
         return -1;
     }
-    sendBuffer[30] = 0x0d;
-    sendBuffer[31] = 0x0a;
+    sendBuffer[35] = 0x0d;
+    sendBuffer[36] = 0x0a;
 
     ros::Subscriber subPath_1 = n.subscribe("/vins_1/vins_estimator/odometry", 1000, path1Callback);
     ros::Subscriber subPath_2 = n.subscribe("/vins_2/vins_estimator/odometry", 1000, path2Callback);
@@ -172,7 +184,7 @@ int main(int argc, char** argv)
     ros::Rate loop_rate(20);        // 以20Hz频率向下发送更新的数据
     int loop_rate_count = 0;
     while(ros::ok()){
-        sp.write(sendBuffer, 32);
+        sp.write(sendBuffer, 37);
         if (print_debug) {          // 1s打印一次调试信息
             if (loop_rate_count >= 20) {
                 debugInfoPrint();

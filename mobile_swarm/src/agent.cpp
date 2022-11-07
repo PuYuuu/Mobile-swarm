@@ -13,7 +13,7 @@ Agent::Agent(string ns, ros::NodeHandle* n)
     _subLaserStr = "/" + ns + "/scan";
     _subObsStr = "/" + ns + "/obs_coor";
     _subImgStr = "/" + ns + "/vins_estimator/image_track/compressed";
-    _subOdomStr = "/" + ns + "/vins_estimator/odometry";
+    _subOdomStr = "/" + ns + "/vins_estimator/imu_propagate";
 
     // ROS_INFO_STREAM("\r\n\tAgent:" << ns 
     //     << "\r\n\tPath Topicname: \"" << _subPathStr
@@ -163,6 +163,9 @@ void Agent::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
 
     botCoor[0] = t.x();
     botCoor[1] = t.y();
+    double siny_cosp = 2 * (q.w() * q.z()+ q.x() * q.y());
+    double cosy_cosp = 1 - 2 * (q.y() * q.y() + q.z() * q.z());
+    botCoor[2] = std::atan2(siny_cosp, cosy_cosp) * 180 / M_PI + 90.0;
 }
 
 void Agent::imgCallback(const sensor_msgs::CompressedImage::ConstPtr& msg)

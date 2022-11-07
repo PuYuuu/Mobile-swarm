@@ -58,6 +58,7 @@ void pubLatestOdometry(const Eigen::Vector3d &P, const Eigen::Quaterniond &Q, co
     nav_msgs::Odometry odometry;
     odometry.header.stamp = ros::Time(t);
     odometry.header.frame_id = "world";
+    odometry.child_frame_id = to_string(AGENT_NUM);
     odometry.pose.pose.position.x = P.x();
     odometry.pose.pose.position.y = P.y();
     odometry.pose.pose.position.z = P.z();
