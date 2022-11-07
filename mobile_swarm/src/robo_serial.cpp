@@ -174,19 +174,19 @@ int main(int argc, char** argv)
     sendBuffer[35] = 0x0d;
     sendBuffer[36] = 0x0a;
 
-    ros::Subscriber subPath_1 = n.subscribe("/vins_1/vins_estimator/odometry", 1000, path1Callback);
-    ros::Subscriber subPath_2 = n.subscribe("/vins_2/vins_estimator/odometry", 1000, path2Callback);
-    ros::Subscriber subPath_3 = n.subscribe("/vins_3/vins_estimator/odometry", 1000, path3Callback);
+    ros::Subscriber subPath_1 = n.subscribe("/vins_1/vins_estimator/imu_propagate", 1000, path1Callback);
+    ros::Subscriber subPath_2 = n.subscribe("/vins_2/vins_estimator/imu_propagate", 1000, path2Callback);
+    ros::Subscriber subPath_3 = n.subscribe("/vins_3/vins_estimator/imu_propagate", 1000, path3Callback);
     ros::Subscriber subObst = n.subscribe("obs_coor", 1000, obstCallback);
     ros::Subscriber subGoal = n.subscribe("/target_pos", 100, goalCallback);
     ROS_INFO_STREAM("Node \"car_serial\" initial successful !");
 
-    ros::Rate loop_rate(20);        // 以20Hz频率向下发送更新的数据
+    ros::Rate loop_rate(100);        // 以20Hz频率向下发送更新的数据
     int loop_rate_count = 0;
     while(ros::ok()){
         sp.write(sendBuffer, 37);
         if (print_debug) {          // 1s打印一次调试信息
-            if (loop_rate_count >= 20) {
+            if (loop_rate_count >= 100) {
                 debugInfoPrint();
                 loop_rate_count = 0;
             }
@@ -202,3 +202,4 @@ int main(int argc, char** argv)
  
     return 0;
 }
+
