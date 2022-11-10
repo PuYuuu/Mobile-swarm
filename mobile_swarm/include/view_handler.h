@@ -4,6 +4,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/String.h>
 #include <pangolin/pangolin.h>
 
 namespace pangolin {
@@ -17,7 +18,8 @@ struct PANGOLIN_EXPORT myHandler : Handler
     virtual void GetPosNormal(View& view, int x, int y, GLprecision p[3], GLprecision Pw[3], GLprecision Pc[3], GLprecision nw[3], GLprecision default_z = 1.0);
 
     void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
-    void MouseMotion(View&, int x, int y, int button_state);    
+    void MouseMotion(View&, int x, int y, int button_state);
+    void Keyboard(View&, unsigned char key, int x, int y, bool pressed);
 
 private:
     OpenGlRenderState* cam_state;
@@ -40,6 +42,7 @@ private:
 
     ros::NodeHandle* _n;
     ros::Publisher pub_target_pos;
+    ros::Publisher pub_key_order;
 };
 
 }

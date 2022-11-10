@@ -144,12 +144,12 @@ void MainShow(ros::NodeHandle* n)
         if (_showLaserPoint == true) {
             if (_curViewPort == 0) {
                 (*agents[0]).startSubLaser();
-                (*agents[1]).startSubLaser();
-                (*agents[2]).startSubLaser();
+                // (*agents[1]).startSubLaser();
+                // (*agents[2]).startSubLaser();
 
                 DrawLaserScan((*agents[0]).getLaserData(), (*agents[0]).getBotCoor());
-                DrawLaserScan((*agents[1]).getLaserData(), (*agents[1]).getBotCoor());
-                DrawLaserScan((*agents[2]).getLaserData(), (*agents[2]).getBotCoor());
+                // DrawLaserScan((*agents[1]).getLaserData(), (*agents[1]).getBotCoor());
+                // DrawLaserScan((*agents[2]).getLaserData(), (*agents[2]).getBotCoor());
             } else {
                 for (int i = 0; i < 3; ++i) {
                     if ( i == _curViewPort - 1) {

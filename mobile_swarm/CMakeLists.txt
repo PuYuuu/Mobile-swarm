@@ -35,6 +35,9 @@ catkin_package()
 add_executable(robo_serial src/robo_serial.cpp)
 target_link_libraries(robo_serial ${catkin_LIBRARIES})
 
+add_executable(controller src/controller.cpp)
+target_link_libraries(controller ${catkin_LIBRARIES})
+
 add_executable(obs_detection src/obs_detection.cpp)
 target_link_libraries(obs_detection ${catkin_LIBRARIES} ${Pangolin_LIBRARIES})
 

@@ -7,7 +7,8 @@ myHandler::myHandler(OpenGlRenderState& cam_state, ros::NodeHandle* n, AxisDirec
 {
     SetZero<3,1>(rot_center);
     last_press_t = std::chrono::steady_clock::now();
-    pub_target_pos = _n->advertise<std_msgs::Float32MultiArray>("/target_pos", 1000); 
+    pub_target_pos = _n->advertise<std_msgs::Float32MultiArray>("/target_pos", 1000);
+    pub_key_order = _n->advertise<std_msgs::String>("/key_order", 1000);
 }
 
 bool myHandler::ValidWinDepth(GLprecision depth)
@@ -99,7 +100,7 @@ void myHandler::Mouse(View& display, MouseButton button, int x, int y, bool pres
             tar_pos.data.emplace_back(Pw[1]);
             tar_pos.data.emplace_back(0);
             pub_target_pos.publish(tar_pos);
-            ROS_WARN("Publish the swarm target postion:\n\tpos_x = %f, pox_y = %f", Pw[0], Pw[1]);
+            ROS_INFO("Publish the swarm target postion:\n\tpos_x = %f, pox_y = %f", Pw[0], Pw[1]);
         }
         
         last_press_button = button;
@@ -155,6 +156,34 @@ void myHandler::MouseMotion(View& display, int x, int y, int button_state)
     
     last_pos[0] = (float)x;
     last_pos[1] = (float)y;
+}
+
+void myHandler::Keyboard(View&, unsigned char key, int x, int y, bool pressed)
+{
+    if (pressed) {
+        std::string order_str;
+        if (key == 'q' || key == '1') {
+            order_str = "line";
+            ROS_INFO("Switch formation : LINE");
+        } else if (key == 'w' || key == '2') {
+            order_str = "column";
+            ROS_INFO("Switch formation : COLUMN");
+        } else if (key == 'e' || key == '3') {
+            order_str = "trig";
+            ROS_INFO("Switch formation : TRIANGLE");
+        } else if (key == 'a' || key == '4') {
+            order_str = "avoid-yes";
+            ROS_INFO("Open avoid mode");
+        } else if (key == 's' || key == '5') {
+            order_str = "avoid-no";
+            ROS_INFO("Close avoid mode");
+        }
+        if (!order_str.empty()) {
+            std_msgs::String kk_order;
+            kk_order.data = order_str;
+            pub_key_order.publish(kk_order);
+        }
+    }
 }
 
 }
