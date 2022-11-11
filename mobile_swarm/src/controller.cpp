@@ -22,7 +22,7 @@ struct Ground {
         y = 0;
         yaw = 90;
     }
-    Ground (int _x, int _y, int _yaw) {
+    Ground (int _x, int _y, int _yaw = 90) {
         this->x = _x;
         this->y = _y;
         this->yaw = _yaw;
@@ -35,14 +35,13 @@ struct Ground {
 
 Ground Forma[][3] = { 
         {{0, 0, 0}, {-700, 0, 0}, {700, 0, 0}},
-        {{0, 0, 0}, {0, -700, 0}, {0, -1400, 0}},
-        {{0, 0, 0}, {-700, -700, 0}, {700, -700, 0}} 
+        {{0, 700, 0}, {0, 0, 0}, {0, -700, 0}},
+        {{0, 350, 0}, {-700, -350, 0}, {700, -350, 0}} 
     };
 
-const int AGENT_NUM = 0;
-
+int AGENT_NUM = 0;
 uint8_t sendBuffer[6];
-Ground gt_pos[3], obs_pos(INT_MAX, INT_MAX, 90), goal_pos;
+Ground gt_pos[3], obs_pos(1000, 1000), goal_pos(0, 0);
 int forma_type = 0;
 bool advoidMode = true;
 tf::TransformListener* tfListener;
@@ -144,15 +143,6 @@ void orderCallback(const std_msgs::String::ConstPtr& msg)
     }
 }
 
-// void numLimit(int& x, int& y, int amplitude)
-// {
-//     int __maximum = abs(x) > abs(y) ? abs(x) : abs(y);
-//     if (__maximum > amplitude) {
-//         x = x * amplitude / __maximum;
-//         y = y * amplitude / __maximum;
-//     } 
-// }
-
 void numLimit(int& x, int& y, int amplitude)
 {
     int mag = static_cast<int>(sqrt(x * x + y * y));
@@ -180,6 +170,8 @@ int main(int argc, char** argv)
     ros::NodeHandle nh_private("~");
     bool print_debug;
     nh_private.getParam("print_debug", print_debug);
+    n.getParam("agent_num", AGENT_NUM);
+    AGENT_NUM -= 1;
 
     // serial相关
     serial::Serial sp;                  // 创建一个serial类
@@ -204,70 +196,83 @@ int main(int argc, char** argv)
     sendBuffer[4] = 0x0d;
     sendBuffer[5] = 0x0a;
 
-    ros::Subscriber subPath_1 = n.subscribe("/vins_1/vins_estimator/imu_propagate", 1000, path1Callback);
-    ros::Subscriber subPath_2 = n.subscribe("/vins_2/vins_estimator/imu_propagate", 1000, path2Callback);
-    ros::Subscriber subPath_3 = n.subscribe("/vins_3/vins_estimator/imu_propagate", 1000, path3Callback);
+    ros::Subscriber subPath_1 = n.subscribe("/vins_1/vins_estimator/odometry", 1000, path1Callback);
+    ros::Subscriber subPath_2 = n.subscribe("/vins_2/vins_estimator/odometry", 1000, path2Callback);
+    ros::Subscriber subPath_3 = n.subscribe("/vins_3/vins_estimator/odometry", 1000, path3Callback);
     ros::Subscriber subObst = n.subscribe("obs_coor", 1000, obstCallback);
     ros::Subscriber subGoal = n.subscribe("/target_pos", 100, goalCallback);
     ros::Subscriber subOrder = n.subscribe("/key_order", 100, orderCallback);
-    ROS_INFO_STREAM("Node \"controller\" successfully launch !");
+    ROS_WARN("Node \"controller\" successfully launch (AGENT_NUM: %d)!", AGENT_NUM);
 
-    ros::Rate loop_rate(100);        // 以20Hz频率向下发送更新的数据
+    ros::Rate loop_rate(20);        // 以20Hz频率向下发送更新的数据
     int loop_rate_count = 0;
     while(ros::ok()){
         int dist;
-        double avoid_gain = 0.0;
-        Ground target;
-        Ground velo_goal, velo_avoid, velo_sum;
-
-        if (AGENT_NUM == 0) {
-            target = goal_pos; 
-        } else {
-            target.x = gt_pos[0].x + Forma[forma_type][AGENT_NUM].x;
-            target.y = gt_pos[0].y + Forma[forma_type][AGENT_NUM].y;
-        }
-        dist = (target.x - gt_pos[AGENT_NUM].x) * (target.x - gt_pos[AGENT_NUM].x) + 
-            (target.y - gt_pos[AGENT_NUM].y) * (target.y - gt_pos[AGENT_NUM].y);
+        Ground unit_center(0, 0);
+        Ground velo_goal(0, 0), velo_forma(0, 0), velo_avoid(0, 0), velo_sum(0, 0);
+        
+        // goal vector
+        dist = (int)sqrt((goal_pos.x + Forma[forma_type][AGENT_NUM].x - gt_pos[AGENT_NUM].x) * (goal_pos.x + Forma[forma_type][AGENT_NUM].x - gt_pos[AGENT_NUM].x) + 
+            (goal_pos.y + Forma[forma_type][AGENT_NUM].y - gt_pos[AGENT_NUM].y) * (goal_pos.y + Forma[forma_type][AGENT_NUM].y - gt_pos[AGENT_NUM].y));
         if (dist > 30) {
-            velo_goal.x = (target.x - gt_pos[AGENT_NUM].x) / 6;
-            velo_goal.y = (target.y - gt_pos[AGENT_NUM].y) / 6;
-            if (dist < 150) {
-                float slow_gain = ((float)dist / 150.0);
+            velo_goal.x = (goal_pos.x + Forma[forma_type][AGENT_NUM].x - gt_pos[AGENT_NUM].x) / 8;
+            velo_goal.y = (goal_pos.y + Forma[forma_type][AGENT_NUM].y - gt_pos[AGENT_NUM].y) / 8;
+            if (dist < 100) {
+                float slow_gain = ((float)dist / 100.0) * ((float)dist / 100.0);
                 velo_goal.x = (int)((float)velo_goal.x * slow_gain);
                 velo_goal.y = (int)((float)velo_goal.y * slow_gain);
             }
-            numLimit(velo_goal.x, velo_goal.y, 25);
+            numLimit(velo_goal.x, velo_goal.y, 15);
         }
 
+        // formation vector
+        unit_center.x = (gt_pos[0].x + gt_pos[1].x + gt_pos[2].x) / 3;
+        unit_center.y = (gt_pos[0].y + gt_pos[1].y + gt_pos[2].y) / 3;
+        dist = (int)sqrt((unit_center.x - goal_pos.x) * (unit_center.x - goal_pos.x) + 
+            (unit_center.y - goal_pos.y) * (unit_center.y - goal_pos.y));
+        if (dist > 30) {
+            int delta_x = (goal_pos.x - unit_center.x);
+            int delta_y = (goal_pos.y - unit_center.y);
+            numLimit(delta_x, delta_y, 150);
+            unit_center.x += delta_x;
+            unit_center.y += delta_y;
+        }
+        dist = (int)sqrt((unit_center.x + Forma[forma_type][AGENT_NUM].x - gt_pos[AGENT_NUM].x) * (unit_center.x + Forma[forma_type][AGENT_NUM].x - gt_pos[AGENT_NUM].x) + 
+            (unit_center.y + Forma[forma_type][AGENT_NUM].y - gt_pos[AGENT_NUM].y) * (unit_center.y + Forma[forma_type][AGENT_NUM].y - gt_pos[AGENT_NUM].y));
+        if (dist > 10) {
+            velo_forma.x = (unit_center.x + Forma[forma_type][AGENT_NUM].x - gt_pos[AGENT_NUM].x) / 8;
+            velo_forma.y = (unit_center.y + Forma[forma_type][AGENT_NUM].y - gt_pos[AGENT_NUM].y) / 8;
+            if (dist < 50) {
+                float slow_gain = ((float)dist / 50.0) * ((float)dist / 50.0);
+                velo_forma.x = (int)((float)velo_forma.x * slow_gain);
+                velo_forma.y = (int)((float)velo_forma.y * slow_gain);
+            }
+            numLimit(velo_forma.x, velo_forma.y, 15);
+        }
+
+        // avoid vector
         if (advoidMode) {
             dist = (int)sqrt(obs_pos.x * obs_pos.x + obs_pos.y * obs_pos.y);
             if (dist < 250 && obs_pos.y > 0) {
-                velo_avoid.x = obs_pos.x > 0 ? -25 : 25;
-                velo_avoid.y = obs_pos.y > 0 ? -25 : 25;
-                avoid_gain = 2;
+                velo_avoid.x = obs_pos.x > 0 ? -15 : 15;
+                velo_avoid.y = obs_pos.y > 0 ? -15 : 15;
             } else if (dist < 650 && obs_pos.y > 0) {
-                int magnitude = 25 * ((float)(650 - dist) / (650.0 - 250));
+                int magnitude = 15 * ((float)(650 - dist) / (650.0 - 250));
                 double theta = atan((double)abs(obs_pos.y) / (obs_pos.x));
-                avoid_gain = 1.8 * (0.05 + (float)(650 - dist) / (650.0 - 250));
                 velo_avoid.x = -1 * mysign(obs_pos.x) * magnitude * cos(theta);
                 velo_avoid.y = -1 * mysign(obs_pos.y) * magnitude * sin(theta);
                 if (obs_pos.x >= 0 && obs_pos.x < 100) {
-                    velo_avoid.x -= ((100 - obs_pos.x) / 5);
-                } else if (obs_pos.x > -100 && obs_pos.x < 0) {
-                    velo_avoid.x += ((100 + obs_pos.x) / 5);
+                    velo_avoid.x -= ((100 - obs_pos.x) / 8);
+                } else if (obs_pos.x > -150 && obs_pos.x < 0) {
+                    velo_avoid.x += ((100 + obs_pos.x) / 8);
                 }
-                numLimit(velo_avoid.x, velo_avoid.y, 25);
+                numLimit(velo_avoid.x, velo_avoid.y, 15);
             }
         }
 
-        velo_sum.x = static_cast<int>(velo_goal.x + velo_avoid.x * avoid_gain);
-        velo_sum.y = static_cast<int>(velo_goal.y + velo_avoid.y * avoid_gain);
-        int velo_sqrt = static_cast<int>(sqrt(velo_sum.x*velo_sum.x+velo_sum.y*velo_sum.y));
-        if (dist < 350 && velo_sqrt < 10) {
-            velo_sum.x = static_cast<int>(velo_goal.x + velo_avoid.x * avoid_gain * 2.3);
-            velo_sum.y = static_cast<int>(velo_goal.y + velo_avoid.y * avoid_gain * 1.8);
-        }
-        numLimit(velo_sum.x, velo_sum.y, 25);
+        velo_sum.x = static_cast<int>(velo_goal.x + velo_forma.x + velo_avoid.x * 3);
+        velo_sum.y = static_cast<int>(velo_goal.y + velo_forma.y + velo_avoid.y * 3);
+        numLimit(velo_sum.x, velo_sum.y, 15);
 
         sendBuffer[1] = 100 + velo_sum.x;
         sendBuffer[2] = 100 + velo_sum.y; 
@@ -279,8 +284,13 @@ int main(int argc, char** argv)
         }
 
         if (print_debug) {
-            if (loop_rate_count >= 100) {
-                ROS_INFO("Vx = %d, Vy = %d, Yaw = %d",sendBuffer[1]-100,sendBuffer[2]-100,sendBuffer[3]);
+            if (loop_rate_count >= 20) {
+                // ROS_INFO("Vx = %d, Vy = %d, Yaw = %d",sendBuffer[1]-100,sendBuffer[2]-100,sendBuffer[3]);
+                ROS_INFO("Goal x = %d, y = %d", goal_pos.x, goal_pos.y);
+                ROS_INFO("Goal velo x = %d, y = %d", velo_goal.x, velo_goal.y);
+                ROS_INFO("Forma velo x = %d, y = %d", velo_forma.x, velo_forma.y);
+                ROS_INFO("total velo x = %d, y = %d", velo_sum.x, velo_sum.y);
+                ROS_INFO(" ");
                 loop_rate_count = 0;
             }
             loop_rate_count++;
