@@ -191,36 +191,32 @@ void PoseGraph::addAgentFrame(KeyFrame* cur_kf)
     
     if (SAVE_LOOP_PATH)
     {
+        double turetime = cur_kf->time_stamp;
         std::string pose_graph_path = VINS_RESULT_PATH + "/pose_graph_path.csv";
         ofstream loop_path_file(pose_graph_path, ios::app);
         loop_path_file.setf(ios::fixed, ios::floatfield);
-        loop_path_file.precision(0);
-        loop_path_file << cur_kf->time_stamp * 1e9 << ",";
-        loop_path_file.precision(5);
-        loop_path_file  << P.x() << ","
-              << P.y() << ","
-              << P.z() << ","
-              << Q.w() << ","
-              << Q.x() << ","
-              << Q.y() << ","
-              << Q.z() << ","
-              << endl;
+        loop_path_file << turetime << " ";
+        loop_path_file  << P.x() << " "
+              << P.y() << " "
+              << P.z() << " "
+              << Q.x() << " "
+              << Q.y() << " "
+              << Q.z() << " "
+              << Q.w() << endl;
         loop_path_file.close();
 
+        turetime = cur_kf->time_stamp;
         std::string pose_graph_sequence_path = VINS_RESULT_PATH + "/pose_graph_path_" + to_string(sequence) + ".csv";
         ofstream sequence_path_file(pose_graph_sequence_path, ios::app);
         sequence_path_file.setf(ios::fixed, ios::floatfield);
-        sequence_path_file.precision(0);
-        sequence_path_file << cur_kf->time_stamp * 1e9 << ",";
-        sequence_path_file.precision(5);
-        sequence_path_file  << P.x() << ","
-              << P.y() << ","
-              << P.z() << ","
-              << Q.w() << ","
-              << Q.x() << ","
-              << Q.y() << ","
-              << Q.z() << ","
-              << endl;
+        sequence_path_file << turetime << " ";
+        sequence_path_file  << P.x() << " "
+              << P.y() << " "
+              << P.z() << " "
+              << Q.x() << " "
+              << Q.y() << " "
+              << Q.z() << " "
+              << Q.w() << endl;
         sequence_path_file.close();
     }
     
@@ -627,7 +623,7 @@ void PoseGraph::optimize4DoF()
             m_keyframelist.unlock();
         }
 
-        std::chrono::milliseconds dura(2000);
+        std::chrono::milliseconds dura(5000);
         std::this_thread::sleep_for(dura);
     }
 }
@@ -687,36 +683,32 @@ void PoseGraph::updatePath()
         
         if (SAVE_LOOP_PATH)
         {
+            double turetime = (it)->time_stamp;
             std::string pose_graph_path = VINS_RESULT_PATH + "/pose_graph_path.csv";
             ofstream loop_path_file(pose_graph_path, ios::app);
             loop_path_file.setf(ios::fixed, ios::floatfield);
-            loop_path_file.precision(0);
-            loop_path_file << (it)->time_stamp * 1e9 << ",";
-            loop_path_file.precision(5);
-            loop_path_file  << P.x() << ","
-                  << P.y() << ","
-                  << P.z() << ","
-                  << Q.w() << ","
-                  << Q.x() << ","
-                  << Q.y() << ","
-                  << Q.z() << ","
-                  << endl;
+            loop_path_file << turetime << " ";
+            loop_path_file  << P.x() << " "
+                  << P.y() << " "
+                  << P.z() << " "
+                  << Q.x() << " "
+                  << Q.y() << " "
+                  << Q.z() << " "
+                  << Q.w() << endl;
             loop_path_file.close();
 
+            turetime = (it)->time_stamp;
             std::string pose_graph_sequence_path = VINS_RESULT_PATH + "/pose_graph_path_" + to_string((it)->sequence) + ".csv";
             ofstream sequence_path_file(pose_graph_sequence_path, ios::app);
             sequence_path_file.setf(ios::fixed, ios::floatfield);
-            sequence_path_file.precision(0);
-            sequence_path_file << (it)->time_stamp * 1e9 << ",";
-            sequence_path_file.precision(5);
-            sequence_path_file  << P.x() << ","
-                  << P.y() << ","
-                  << P.z() << ","
-                  << Q.w() << ","
-                  << Q.x() << ","
-                  << Q.y() << ","
-                  << Q.z() << ","
-                  << endl;
+            sequence_path_file << turetime << " ";
+            sequence_path_file  << P.x() << " "
+                  << P.y() << " "
+                  << P.z() << " "
+                  << Q.x() << " "
+                  << Q.y() << " "
+                  << Q.z() << " "
+                  << Q.w() << endl;
             sequence_path_file.close();
         }
         

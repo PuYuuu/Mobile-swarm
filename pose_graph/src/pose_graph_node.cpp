@@ -49,6 +49,7 @@ ros::Subscriber sub_odom1;
 ros::Subscriber sub_odom2;
 ros::Subscriber sub_odom3;
 ros::Subscriber sub_odom4;
+ros::Subscriber sub_odom5;
 
 void agent_callback(const agent_msg::AgentMsgConstPtr &agent_msg)
 {
@@ -228,8 +229,6 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
     }
     //ROS_WARN("read transform success!");
 
-
-
     Vector3d ypr = Utility::R2ypr(q.toRotationMatrix());
     ypr(0)    += 90.0*3.14159/180.0;
     q          = Utility::ypr2R(ypr); 
@@ -327,6 +326,7 @@ int main(int argc, char **argv)
         sub_odom2 = n.subscribe("/vins_2/vins_estimator/odometry",  100,  odom_callback);
         sub_odom3 = n.subscribe("/vins_3/vins_estimator/odometry",  100,  odom_callback);
         sub_odom4 = n.subscribe("/vins_4/vins_estimator/odometry",  100,  odom_callback);
+        sub_odom5 = n.subscribe("/vins_5/vins_estimator/odometry",  100,  odom_callback);
         meshPub = n.advertise<visualization_msgs::Marker>("robot", 100, true); 
     } else {
         ROS_WARN("Do not use mesh maker for visualization.");
